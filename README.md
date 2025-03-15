@@ -54,6 +54,3 @@ AllowedHosts=*
 
 # MySQL connection string (adjust placeholders as needed)
 ConnectionStrings__MySqlConnection=server=127.0.0.1;port=3306;database=animal_shelter_db;uid=ACCOUNT NAME;pwd=YOUR_PASSWORD_HERE;
-
-# Any custom environment variables
-MY_CUSTOM_VARIABLE=some_value
