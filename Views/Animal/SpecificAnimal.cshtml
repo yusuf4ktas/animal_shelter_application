@@ -1,0 +1,23 @@
+﻿@model AnimalInformation
+
+
+<img src="@Model.AnimalImage" width="300" />
+<p>Age: @Model.AnimalAge</p>
+<p>Gender: @(Model.AnimalGender ? "Female" : "Male")</p>
+
+<p>ID: @Model.AnimalId</p>
+<p>Neutering Status: @(Model.NeuteringStatus ? "Neutered" : "Unneutered")</p>
+<p>Characteristic Features: @Model.CharacteristicFeatures</p>
+
+@if (Model.HealthCondition != null)
+{
+    <p>Health Check-up Date: @Model.HealthCondition.HealthCheckUpDate</p>
+    <p>Disability Status: @(Model.HealthCondition.DisabilityStatus ? "Yes" : "No")</p>
+    <p>Chronic Disease: @(Model.HealthCondition.ChronicDisease ? "Yes" : "No")</p>
+}
+
+<form method="post" action="/Adoption/Adopt">
+    <input type="hidden" name="animalId" value="@Model.AnimalId" />
+    <input type="hidden" name="userId" value="1" /> 
+    <button type="submit">Adopt</button>
+</form>

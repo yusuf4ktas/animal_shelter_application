@@ -1,0 +1,16 @@
+﻿@model List<AnimalInformation>
+
+<h2>@ViewBag.species</h2>
+@foreach (var animal in Model)
+{
+    <div>
+        <img src="@animal.AnimalImage" alt="@animal.AnimalId" width="150" />
+        <p>ID: @animal.AnimalId</p>
+        <p>
+
+            <a href="@Url.Action("SpecificAnimal", "Animal", new { id = animal.AnimalId })">View Details</a>
+           
+        </p>
+    </div>
+}
+

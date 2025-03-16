@@ -30,5 +30,16 @@ namespace animal_shelter_app.Models
 
         [Column("animal_image")]
         public byte[]? AnimalImage { get; set; }
+
+
+        [Column("species")]
+        public string Species { get; set; }
+
+        [Column("isAdopted")]
+        public bool IsAdopted { get; set; } = false;
+
+
+        public AnimalHealthCondition? HealthCondition { get; set; }
+
     }
 }

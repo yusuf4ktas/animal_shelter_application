@@ -23,7 +23,17 @@ namespace animal_shelter_app.Models
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            // Fluent API configuration if necessary
+
+
+            // Configuring the one-to-one relationship between AnimalInformation and AnimalHealthCondition
+            modelBuilder.Entity<AnimalHealthCondition>()
+                .HasOne(a => a.AnimalInformation)
+                .WithOne(a => a.HealthCondition)
+                .HasForeignKey<AnimalHealthCondition>(a => a.AnimalId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+
+
         }
     }
 }

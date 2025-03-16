@@ -23,8 +23,16 @@ namespace animal_shelter_app.Models
         [StringLength(150)]
         public string? UserAddress { get; set; }
 
-        //Navigation properties if you want to link to User or AnimalInformation
+        [ForeignKey("UserId")]
         public User? User { get; set; }
+
+        //Navigation properties 
+        [ForeignKey("AnimalId")]
         public AnimalInformation? AnimalInformation { get; set; }
+        
+
+      
+
+
     }
 }
