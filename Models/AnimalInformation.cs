@@ -29,9 +29,7 @@ namespace animal_shelter_app.Models
         public DateTime? ArrivalDate { get; set; }
 
         [Column("animal_image")]
-        //Resimleri path şeklinde kayıt ediyoruz çünkü diğer türlü database çok büyür, performans etkilenir.
-        //Bundan dolayı AnimalImage string olarak kaydedilir.
-        public string AnimalImage { get; set; }
+        public byte[]? AnimalImage { get; set; }
 
 
         [Column("species")]
