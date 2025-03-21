@@ -6,4 +6,33 @@
     <h2 class="mt-4 text-center" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
         Welcome to the Animal Shelter
     </h2>
+
+    @model List<AnimalInformation>
+
+    @if (Model != null && Model.Any())
+    {
+        foreach (var animal in Model)
+        {
+            if (animal != null)
+            {
+                <h3>@(animal.AnimalId.ToString() ?? "Bilinmiyor") (@(animal.Species ?? "Tür belirtilmemiş"))</h3>
+                @if (!string.IsNullOrEmpty(animal.AnimalImage))
+                {
+                    <img src="@animal.AnimalImage" alt="@animal.AnimalId" width="200" height="200" />
+                }
+                else
+                {
+                    <p>Resim yok</p>
+                }
+            }
+            else
+            {
+                <p>Geçersiz hayvan verisi.</p>
+            }
+        }
+    }
+    else
+    {
+        <p>Hayvan bulunamadı.</p>
+    }
 </div>
