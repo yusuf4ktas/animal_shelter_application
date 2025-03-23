@@ -3,55 +3,40 @@ using Microsoft.EntityFrameworkCore;
 using DotNetEnv;
 
 var builder = WebApplication.CreateBuilder(args);
-//Comment these parts if you have not added the .env file along with DotEnv package
 
-// 1. Load the .env file
-Env.Load(); // defaults to .env in the current directory
+// Add HttpContextAccessor
+builder.Services.AddHttpContextAccessor();
 
-// 2. Also load environment variables into the configuration
+// Load .env file
+Env.Load();
 builder.Configuration.AddEnvironmentVariables();
 
-// 3. Read the connection string
+// Get MySQL connection string
 var myConnStr = builder.Configuration.GetConnectionString("MySqlConnection");
 Console.WriteLine("Connection String from .env: " + myConnStr);
 
-// 4. Register your DbContext with EF
+// Configure DbContext for MySQL
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseMySql(
-        myConnStr,
-        ServerVersion.AutoDetect(myConnStr)
-    )
+    options.UseMySql(myConnStr, ServerVersion.AutoDetect(myConnStr))
 );
 
-// Add services to the container.
+// Configure MVC and Session
 builder.Services.AddControllersWithViews();
-
-// For EF Core + MySQL
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseMySql(
-        builder.Configuration.GetConnectionString("MySqlConnection"),
-        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("MySqlConnection"))
-    )
-);
-
-// For Session (if you plan to store user info in session)
 builder.Services.AddDistributedMemoryCache();
-
 builder.Services.AddSession(options =>
 {
-    // For example, 30 minutes idle timeout
-    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // Session timeout duration
+    options.Cookie.HttpOnly = true; // Security
+    options.Cookie.IsEssential = true; // Essential cookie
 });
-
 
 var app = builder.Build();
 
-// Seed the admin if it does not exist.
+// Add admin user to database if not exists
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-    // Check if an admin (UserRole = true) exists
     if (!dbContext.Users.Any(u => u.UserRole == true))
     {
         var adminUser = new User
@@ -60,7 +45,7 @@ using (var scope = app.Services.CreateScope())
             UserSurname = "User",
             UserEmail = "admin@gmail.com",
             UserPassword = User.HashPassword("Admin4565"),
-            UserRole = true, // True means admin
+            UserRole = true,
             PresentAnimals = 0
         };
 
@@ -69,27 +54,24 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-// Configure the HTTP request pipeline.
+// Error handling
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
+// Middleware configuration
 app.UseRouting();
-
-// Enable session
-app.UseSession();
-
+app.UseSession(); // Ensure session is enabled before Authorization
 app.UseAuthorization();
-
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Home}/{action=Index}/{id?}"
+);
 
 app.Run();

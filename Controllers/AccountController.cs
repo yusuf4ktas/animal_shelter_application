@@ -1,5 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using System.Linq;
 using animal_shelter_app.Models;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace animal_shelter_app.Controllers
 {
@@ -12,24 +16,116 @@ namespace animal_shelter_app.Controllers
             _dbContext = dbContext;
         }
 
+        // GET: User Login Page
+        [HttpGet]
+        public IActionResult UserLogin() => View();
 
-        //GET: Editing the profile including the password
+        // POST: User Login
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult UserLogin(string email, string password)
+        {
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+            {
+                ModelState.AddModelError("", "Email and Password are required.");
+                return View();
+            }
+
+            var hashedPassword = Models.User.HashPassword(password);
+            var user = _dbContext.Users.FirstOrDefault(u => u.UserEmail == email && u.UserPassword == hashedPassword && !u.UserRole);
+
+            if (user == null)
+            {
+                ModelState.AddModelError("", "Invalid login attempt.");
+                return View();
+            }
+
+            SetSession(user, "User");
+            return RedirectToAction("UserPage");
+        }
+
+        // GET: Admin Login Page
+        [HttpGet]
+        public IActionResult AdminLogin() => View();
+
+        // POST: Admin Login
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AdminLogin(string email, string password)
+        {
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+            {
+                ModelState.AddModelError("", "Email and Password are required.");
+                return View();
+            }
+
+            var hashedPassword = Models.User.HashPassword(password);
+            var admin = _dbContext.Users.FirstOrDefault(u => u.UserEmail == email && u.UserPassword == hashedPassword && u.UserRole);
+
+            if (admin == null)
+            {
+                ModelState.AddModelError("", "Invalid admin login attempt.");
+                return View();
+            }
+
+            SetSession(admin, "Admin");
+            return RedirectToAction("Index", "Home");
+        }
+
+        // GET: Register Page
+        [HttpGet]
+        public IActionResult Register() => View();
+
+        // POST: Register
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Register(User userModel, string confirmPassword)
+        {
+            if (!ModelState.IsValid)
+                return View(userModel);
+
+            if (string.IsNullOrWhiteSpace(confirmPassword) || userModel.UserPassword != confirmPassword)
+            {
+                ModelState.AddModelError("", "Passwords do not match.");
+                return View(userModel);
+            }
+
+            if (_dbContext.Users.Any(u => u.UserEmail == userModel.UserEmail))
+            {
+                ModelState.AddModelError("", "Email already in use.");
+                return View(userModel);
+            }
+
+            userModel.UserPassword = Models.User.HashPassword(userModel.UserPassword);
+            userModel.UserRole = false; // Default to regular user
+            userModel.PresentAnimals = 0;
+
+            _dbContext.Users.Add(userModel);
+            _dbContext.SaveChanges();
+
+            TempData["SuccessMessage"] = "Registration successful! You can now log in.";
+            return RedirectToAction("UserLogin");
+        }
+
+        // Logout
+        public IActionResult Logout()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("UserLogin");
+        }
+
+        // GET: Edit Profile
         [HttpGet]
         public IActionResult EditProfile()
         {
             var userId = HttpContext.Session.GetInt32("UserId");
             if (!userId.HasValue)
-            {
-                return RedirectToAction("Login");
-            }
+                return RedirectToAction("UserLogin");
 
             var user = _dbContext.Users.Find(userId.Value);
             if (user == null)
-            {
-                return RedirectToAction("Login");
-            }
+                return RedirectToAction("UserLogin");
 
-            // Populate the view model with current user data
             var viewModel = new EditProfileViewModel
             {
                 UserId = user.UserId,
@@ -41,199 +137,50 @@ namespace animal_shelter_app.Controllers
 
             return View(viewModel);
         }
-        // POST: Posting the edited profile to the db
+
+        // POST: Edit Profile
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult EditProfile(EditProfileViewModel model)
         {
             var userId = HttpContext.Session.GetInt32("UserId");
             if (!userId.HasValue)
-            {
-                return RedirectToAction("Login");
-            }
+                return RedirectToAction("UserLogin");
 
             var existingUser = _dbContext.Users.Find(userId.Value);
             if (existingUser == null)
-            {
-                return RedirectToAction("Login");
-            }
+                return RedirectToAction("UserLogin");
 
             if (!ModelState.IsValid)
-            {
                 return View(model);
-            }
 
-            // Update user fields
             existingUser.UserName = model.UserName;
             existingUser.UserSurname = model.UserSurname;
             existingUser.UserEmail = model.UserEmail;
             existingUser.PresentAnimals = model.PresentAnimals;
 
-            // Update password only if a new one was provided
             if (!string.IsNullOrEmpty(model.NewPassword))
-            {
-                existingUser.UserPassword = animal_shelter_app.Models.User.HashPassword(model.NewPassword);
-            }
-
+                existingUser.UserPassword = Models.User.HashPassword(model.NewPassword);
 
             _dbContext.SaveChanges();
-
-            // Redirect user to their respective page
-            if (existingUser.UserRole)
-            {
-                // Admin
-                return RedirectToAction("AdminPage");
-            }
-            else
-            {
-                // Normal user
-                return RedirectToAction("UserPage");
-            }
+            return RedirectToAction("UserPage");
         }
 
-        // GET: /Account/Register path
-        [HttpGet]
-        public IActionResult Register()
+        // Helper: Set Session Data
+        private void SetSession(User user, string role)
         {
-            return View();
-        }
-
-        // POST: /Account/Register path
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Register(User userModel)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View(userModel);
-            }
-
-            // Check if email is already registered
-            if (_dbContext.Users.Any(u => u.UserEmail == userModel.UserEmail))
-            {
-                ModelState.AddModelError("", "Email already in use.");
-                return View(userModel);
-            }
-
-            // Hash the password before saving
-            userModel.UserPassword = animal_shelter_app.Models.User.HashPassword(userModel.UserPassword);
-
-            // Set default role to user (false) and initialize present_animals to 0
-            userModel.UserRole = false;
-            userModel.PresentAnimals = 0;
-
-            _dbContext.Users.Add(userModel);
-            _dbContext.SaveChanges();
-
-            return RedirectToAction("Login", "Account");
-        }
-
-        // GET: /Account/Login path
-        [HttpGet]
-        public IActionResult Login()
-        {
-            return View();
-        }
-
-        // POST: /Account/Login path
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Login(string userEmail, string userPassword, string loginType)
-        {
-            if (string.IsNullOrWhiteSpace(userEmail) || string.IsNullOrWhiteSpace(userPassword))
-            {
-                ModelState.AddModelError("", "Email and Password are required.");
-                return View();
-            }
-
-            // Hash the password for comparison
-            string hashedPassword = animal_shelter_app.Models.User.HashPassword(userPassword);
-            var user = _dbContext.Users
-                .FirstOrDefault(u => u.UserEmail == userEmail && u.UserPassword == hashedPassword);
-
-            if (user == null)
-            {
-                ModelState.AddModelError("", "Invalid login attempt.");
-                return View();
-            }
-
-            // Check if the loginType is "Admin" but the user is not an admin
-            if (loginType == "Admin" && !user.UserRole)
-            {
-                ModelState.AddModelError("", "You are not authorized as an admin.");
-                return View();
-            }
-
-            // Set session info
             HttpContext.Session.SetInt32("UserId", user.UserId);
-            HttpContext.Session.SetString("UserEmail", user.UserEmail);
-            HttpContext.Session.SetString("UserRole", user.UserRole ? "Admin" : "User");
-
-            // If user is admin => go to AdminPage
-            if (user.UserRole)
-            {
-                return RedirectToAction("AdminPage", "Account");
-            }
-            else
-            {
-                // Normal user => go to UserPage
-                return RedirectToAction("UserPage", "Account");
-            }
+            HttpContext.Session.SetString("UserName", user.UserName);
+            HttpContext.Session.SetString("UserRole", role);
         }
 
-        // End the session and redirect to the home page
-        public IActionResult Logout()
-        {
-            HttpContext.Session.Clear();
-            return RedirectToAction("Index", "Home");
-        }
-
-        // Helper function to check if the current session user is an admin.
-        private bool IsAdmin()
-        {
-            return HttpContext.Session.GetString("UserRole") == "Admin";
-        }
-
-        // GET: /Account/UserPage
+        // User Page
         public IActionResult UserPage()
         {
-            // Check if the current session user is actually a normal user
             var role = HttpContext.Session.GetString("UserRole");
             if (role != "User")
-            {
-                return RedirectToAction("Login", "Account");
-            }
+                return RedirectToAction("UserLogin");
 
-            return View();
-        }
-
-        // GET: /Account/AdminPage
-        public IActionResult AdminPage()
-        {
-            //Check if the current session user is actually an admin
-            var role = HttpContext.Session.GetString("UserRole");
-            if (role != "Admin")
-            {
-                return RedirectToAction("Login", "Account");
-            }
-
-            return View();
-        }
-
-        // Example of an admin-only dashboard for privileged actions.
-        public IActionResult AdminDashboard()
-        {
-            if (!IsAdmin())
-            {
-                // Redirect back to login if the session is not opened for admin.
-                return RedirectToAction("Login", "Account");
-            }
-
-            // Full access to your DB features.
-            // Listing all users, manage animal records, etc.
-            // var users = _dbContext.Users.ToList();
-            // var animals = _dbContext.AnimalInformations.ToList();
-            // ... and so on
             return View();
         }
     }

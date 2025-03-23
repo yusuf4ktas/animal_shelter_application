@@ -1,0 +1,152 @@
+﻿@{
+    ViewBag.Title = "User Login";
+    Layout = "~/Views/Shared/_Layout.cshtml"; // Ana layout'u kullan
+}
+
+<style>
+    /* Genel Stil (Aynı Kaldı) */
+    .login-container {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        width: 900px;
+        height: 600px;
+        background-color: #fff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        overflow: hidden;
+        margin: auto;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .login-left, .login-right {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+    }
+
+        .login-left img {
+            max-width: 100%;
+            max-height: 70%;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+    .form-container {
+        width: 100%;
+        max-width: 300px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+        .form-container input, .form-container button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .form-container button {
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+        }
+
+            .form-container button:hover {
+                background-color: #0056b3;
+            }
+
+    .admin-login {
+        margin-top: 10px;
+        color: #007bff;
+        text-decoration: none;
+        font-size: 14px;
+    }
+
+        .admin-login:hover {
+            text-decoration: underline;
+        }
+</style>
+
+<div class="login-container">
+    <!-- Sol Taraf: Resim -->
+    <div class="login-left">
+        <img src="/images/login_image.jpg" alt="Login Image" />
+        <div class="slogan">“Great happiness with little paws!”</div>
+    </div>
+
+    <!-- Sağ Taraf: Login/Register Form -->
+    <div class="login-right">
+        <!-- Login/Register Seçenekleri -->
+        <div class="form-toggle">
+            <button id="login-toggle" class="tab-button active">Login</button>
+            <button id="register-toggle" class="tab-button">Register</button>
+        </div>
+
+        <!-- Login Form -->
+        <div id="login-form" class="form-container">
+            <h2>Login</h2>
+            <form method="post" action="@Url.Action("Login", "Account")">
+                @Html.AntiForgeryToken() <!-- CSRF koruması -->
+                <input type="email" name="email" placeholder="Email" required />
+                <input type="password" name="password" placeholder="Password" required />
+                <button type="submit">Login</button>
+            </form>
+
+            @if (ViewBag.ErrorMessage != null)
+            {
+                <div class="alert alert-danger mt-3">@ViewBag.ErrorMessage</div>
+            }
+
+            <a href="@Url.Action("AdminLogin", "Account")" class="admin-login">Log in as admin</a>
+        </div>
+
+        <!-- Register Form -->
+        <div id="register-form" class="form-container" style="display: none;">
+            <h2>Register</h2>
+            <form method="post" action="@Url.Action("Register", "Account")">
+                @Html.AntiForgeryToken() <!-- CSRF koruması -->
+                <input type="text" name="firstName" placeholder="Name" required />
+                <input type="text" name="lastName" placeholder="Surname" required />
+                <input type="email" name="email" placeholder="Email" required />
+                <input type="password" name="password" placeholder="Password" required />
+                <input type="password" name="confirmPassword" placeholder="Confirm Password" required />
+                <button type="submit">Register</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const loginToggle = document.getElementById("login-toggle");
+            const registerToggle = document.getElementById("register-toggle");
+            const loginForm = document.querySelector("#login-form");
+            const registerForm = document.querySelector("#register-form");
+
+            loginToggle.addEventListener("click", function () {
+                loginForm.style.display = "block";
+                registerForm.style.display = "none";
+                loginToggle.classList.add("active");
+                registerToggle.classList.remove("active");
+            });
+
+            registerToggle.addEventListener("click", function () {
+                registerForm.style.display = "block";
+                loginForm.style.display = "none";
+                registerToggle.classList.add("active");
+                loginToggle.classList.remove("active");
+            });
+        });
+    </script>
+}
