@@ -1,0 +1,12 @@
+﻿@{
+    ViewData["Title"] = "Admin Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
+
+<div class="container mt-4">
+    <h2>Admin Dashboard</h2>
+    <p>Welcome, @HttpContextAccessor.HttpContext.Session.GetString("UserName")!</p>
+    <!-- Admin features to be added -->
+</div>

@@ -1,31 +1,38 @@
-using System.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
 using animal_shelter_app.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Globalization;
+using System.Linq;
 
-namespace animal_shelter_app.Controllers;
-
-public class HomeController : Controller
+namespace animal_shelter_app.Controllers
 {
-    private readonly ILogger<HomeController> _logger;
-
-    public HomeController(ILogger<HomeController> logger)
+    public class HomeController : Controller
     {
-        _logger = logger;
-    }
+        private readonly ApplicationDbContext _dbContext;
 
-    public IActionResult Index()
-    {
-        return View();
-    }
+        public HomeController(ApplicationDbContext dbContext)
+        {
+            _dbContext = dbContext;
+        }
 
-    public IActionResult Privacy()
-    {
-        return View();
-    }
+        // GET: /Home/Index
+        [HttpGet]
+        public IActionResult Index(string species)
+        {
+            // Pull from DB 
+            var animals = _dbContext.AnimalInformations
+                .Where(a => !a.IsAdopted)
+                .ToList();
 
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            // Then filter in memory, ignore case
+            if (!string.IsNullOrEmpty(species))
+            {
+                animals = animals
+                    .Where(a => a.Species.Equals(species, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+            }
+
+            return View(animals);
+        }
     }
 }

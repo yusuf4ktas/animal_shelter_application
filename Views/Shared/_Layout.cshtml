@@ -30,14 +30,23 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
+
+                <!-- NEW: Three-dot button to open the filter offcanvas -->
+                <button class="btn btn-link me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#filterDrawer" aria-label="Filter">
+                    <i class="bi bi-three-dots-vertical fs-4"></i>
+                </button>
+
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">trial</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
+                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
+
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <!-- Main navbar links -->
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
@@ -59,7 +68,7 @@
                         </li>
                     </ul>
 
-                    <!-- Sağ Tarafa Kullanıcı veya Admin İsmi -->
+                    <!-- Right side: user or admin name -->
                     <ul class="navbar-nav ms-auto align-items-center">
                         @if (HttpContextAccessor.HttpContext.Session.GetString("UserName") != null)
                         {
@@ -82,11 +91,41 @@
                             </li>
                         }
                     </ul>
-
                 </div>
             </div>
         </nav>
     </header>
+
+    <!-- NEW: Offcanvas for filtering animals by species -->
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="filterDrawer" aria-labelledby="filterDrawerLabel">
+        <div class="offcanvas-header">
+            <h5 id="filterDrawerLabel">Filter by Species</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <ul class="list-group">
+                <li class="list-group-item">
+                    <a asp-controller="Home" asp-action="Index">
+                        <i class="bi bi-grid me-1"></i> All Animals
+                    </a>
+                </li>
+                <li class="list-group-item">
+                    <a asp-controller="Home" asp-action="Index" asp-route-species="Dog">
+                        <img src="~/images/dog_icon.png" alt="Dog" style="width:20px; height:20px; margin-right:5px;" />
+                        Dog
+                    </a>
+                </li>
+                <li class="list-group-item">
+                    <a asp-controller="Home" asp-action="Index" asp-route-species="Cat">
+                        <img src="~/images/cat_icon.png" alt="Cat" style="width:20px; height:20px; margin-right:5px;" />
+                        Cat
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!-- END Offcanvas -->
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
@@ -98,6 +137,7 @@
             &copy; 2025 - animal_shelter - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

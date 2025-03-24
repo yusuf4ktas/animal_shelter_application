@@ -29,7 +29,7 @@ namespace animal_shelter_app.Models
         public DateTime? ArrivalDate { get; set; }
 
         [Column("animal_image")]
-        public string AnimalImage { get; set; }
+        public string? AnimalImage { get; set; }
 
 
         [Column("species")]

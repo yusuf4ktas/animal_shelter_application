@@ -1,38 +1,49 @@
-﻿@{
+﻿@model List<animal_shelter_app.Models.AnimalInformation>
+@{
     ViewData["Title"] = "Home Page";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container">
-    <h2 class="mt-4 text-center" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
-        Welcome to the Animal Shelter
-    </h2>
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Welcome to the Animal Shelter</h2>
+    <h3 class="mt-4 text-center">@ViewBag.Filter</h3>
 
-    @model List<AnimalInformation>
 
     @if (Model != null && Model.Any())
     {
         foreach (var animal in Model)
         {
-            if (animal != null)
-            {
-                <h3>@(animal.AnimalId.ToString() ?? "Bilinmiyor") (@(animal.Species ?? "Tür belirtilmemiş"))</h3>
-                @if (!string.IsNullOrEmpty(animal.AnimalImage))
-                {
-                    <img src="@animal.AnimalImage" alt="@animal.AnimalId" width="200" height="200" />
-                }
-                else
-                {
-                    <p>Resim yok</p>
-                }
-            }
-            else
-            {
-                <p>Geçersiz hayvan verisi.</p>
-            }
+            <div class="row mb-3">
+                <!-- Left side: image -->
+                <div class="col-md-3">
+                    @if (!string.IsNullOrEmpty(animal.AnimalImage))
+                    {
+                        <img src="@animal.AnimalImage" alt="Animal" class="img-fluid rounded" />
+                    }
+                    else
+                    {
+                        <p>No Image</p>
+                    }
+                </div>
+
+                <!-- Right side: info -->
+                <div class="col-md-9">
+                    <h4>Animal ID: @animal.AnimalId</h4>
+                    <p>Species: @animal.Species</p>
+                    <p>Age: @animal.AnimalAge</p>
+                    <p>Gender: @(animal.AnimalGender ? "Female" : "Male")</p>
+                    <p>Neutering: @(animal.NeuteringStatus ? "Neutered" : "Not Neutered")</p>
+                    <a asp-action="SpecificAnimal" asp-controller="Animal"
+                       asp-route-id="@animal.AnimalId"
+                       class="btn btn-primary mt-2">
+                        View Details
+                    </a>
+                </div>
+            </div>
         }
     }
     else
     {
-        <p>Hayvan bulunamadı.</p>
+        <p class="text-center">No animals found.</p>
     }
 </div>

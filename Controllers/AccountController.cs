@@ -48,6 +48,17 @@ namespace animal_shelter_app.Controllers
         [HttpGet]
         public IActionResult AdminLogin() => View();
 
+        // GET: /Account/AdminPage
+        [HttpGet]
+        public IActionResult AdminPage()
+        {
+            // Verify the user is admin
+            if (HttpContext.Session.GetString("UserRole") != "Admin")
+                return RedirectToAction("AdminLogin");
+
+            return View();
+        }
+
         // POST: Admin Login
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -69,7 +80,7 @@ namespace animal_shelter_app.Controllers
             }
 
             SetSession(admin, "Admin");
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("AdminPage", "Account");
         }
 
         // GET: Register Page
@@ -82,29 +93,28 @@ namespace animal_shelter_app.Controllers
         public IActionResult Register(User userModel, string confirmPassword)
         {
             if (!ModelState.IsValid)
-                return View(userModel);
+                return View("UserLogin", userModel);
 
             if (string.IsNullOrWhiteSpace(confirmPassword) || userModel.UserPassword != confirmPassword)
             {
-                ModelState.AddModelError("", "Passwords do not match.");
-                return View(userModel);
+                ModelState.AddModelError("confirmPassword", "Passwords do not match.");
+                return View("UserLogin", userModel);
             }
 
             if (_dbContext.Users.Any(u => u.UserEmail == userModel.UserEmail))
             {
-                ModelState.AddModelError("", "Email already in use.");
-                return View(userModel);
+                ModelState.AddModelError(nameof(userModel.UserEmail), "Email already in use.");
+                return View("UserLogin", userModel);
             }
 
             userModel.UserPassword = Models.User.HashPassword(userModel.UserPassword);
-            userModel.UserRole = false; // Default to regular user
+            userModel.UserRole = false;
             userModel.PresentAnimals = 0;
-
             _dbContext.Users.Add(userModel);
             _dbContext.SaveChanges();
 
-            TempData["SuccessMessage"] = "Registration successful! You can now log in.";
-            return RedirectToAction("UserLogin");
+            TempData["SuccessMessage"] = "Registration successful! Please log in.";
+            return RedirectToAction(nameof(UserLogin));
         }
 
         // Logout

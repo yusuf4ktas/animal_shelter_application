@@ -1,16 +1,42 @@
-﻿@model List<AnimalInformation>
+﻿@model List<animal_shelter_app.Models.AnimalInformation>
 
-<h2>@ViewBag.species</h2>
-@foreach (var animal in Model)
-{
-    <div>
-        <img src="@animal.AnimalImage" alt="@animal.AnimalId" width="150" />
-        <p>ID: @animal.AnimalId</p>
-        <p>
-
-            <a href="@Url.Action("SpecificAnimal", "Animal", new { id = animal.AnimalId })">View Details</a>
-           
-        </p>
-    </div>
+@{
+    ViewData["Title"] = ViewBag.Species ?? "Animals";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+<div class="container mt-4">
+    <h2 class="mb-4 text-center">@ViewData["Title"]</h2>
+
+    @if (Model?.Any() == true)
+    {
+        foreach (var animal in Model)
+        {
+            <div class="row mb-3 align-items-center border-bottom pb-3">
+                <div class="col-md-3">
+                    @if (!string.IsNullOrEmpty(animal.AnimalImage))
+                    {
+                        <img src="@animal.AnimalImage" alt="@animal.AnimalId" class="img-fluid rounded" />
+                    }
+                    else
+                    {
+                        <div class="text-muted">No image</div>
+                    }
+                </div>
+                <div class="col-md-9">
+                    <h5>ID: @animal.AnimalId</h5>
+                    <p><strong>Species:</strong> @animal.Species</p>
+                    <p><strong>Age:</strong> @animal.AnimalAge</p>
+                    <p><strong>Gender:</strong> @(animal.AnimalGender ? "Female" : "Male")</p>
+                    <a asp-action="SpecificAnimal" asp-route-id="@animal.AnimalId" class="btn btn-sm btn-primary">
+                        View Details
+                    </a>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <p class="text-center text-muted">No animals available.</p>
+    }
+</div>

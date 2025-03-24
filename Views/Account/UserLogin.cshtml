@@ -1,10 +1,10 @@
-﻿@{
-    ViewBag.Title = "User Login";
-    Layout = "~/Views/Shared/_Layout.cshtml"; // Ana layout'u kullan
+﻿@model animal_shelter_app.Models.User
+@{
+    ViewData["Title"] = "User Login";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <style>
-    /* Genel Stil (Aynı Kaldı) */
     .login-container {
         display: flex;
         flex-direction: row;
@@ -75,27 +75,85 @@
         .admin-login:hover {
             text-decoration: underline;
         }
+
+    /* Toggle switch container */
+    .toggle-switch {
+        position: relative;
+        width: auto;
+    }
+
+    /* Hide the checkbox itself */
+    .toggle-checkbox {
+        display: none;
+    }
+
+    /* The slider background */
+    .toggle-slider {
+        position: relative;
+        width: 50px;
+        height: 25px;
+        background-color: #ccc;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        display: inline-block;
+    }
+
+        /* The round handle */
+        .toggle-slider::after {
+            content: "";
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 21px;
+            height: 21px;
+            background-color: #fff;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+
+    /* When checkbox is checked => move handle to the right, color the background */
+    .toggle-checkbox:checked + .toggle-slider {
+        background-color: #0d6efd; 
+    }
+
+        .toggle-checkbox:checked + .toggle-slider::after {
+            transform: translateX(25px);
+        }
+
+    /* Label text styling */
+    .toggle-label {
+        font-weight: 600;
+        cursor: pointer;
+        user-select: none;
+    }
 </style>
 
 <div class="login-container">
-    <!-- Sol Taraf: Resim -->
+    <!-- Left Side: Image-->
     <div class="login-left">
         <img src="/images/login_image.jpg" alt="Login Image" />
         <div class="slogan">“Great happiness with little paws!”</div>
     </div>
 
-    <!-- Sağ Taraf: Login/Register Form -->
     <div class="login-right">
-        <!-- Login/Register Seçenekleri -->
-        <div class="form-toggle">
-            <button id="login-toggle" class="tab-button active">Login</button>
-            <button id="register-toggle" class="tab-button">Register</button>
+        <!-- Toggle Switch for Login/Register -->
+        <div class="toggle-switch d-flex align-items-center justify-content-center mb-3">
+            <span class="toggle-label me-2" id="toggleLoginLabel">Login</span>
+
+            <!-- Hidden checkbox controlling the toggle -->
+            <input type="checkbox" id="loginRegisterToggle" class="toggle-checkbox" checked />
+
+            <!-- The visible slider -->
+            <label for="loginRegisterToggle" class="toggle-slider"></label>
+
+            <span class="toggle-label ms-2" id="toggleRegisterLabel">Register</span>
         </div>
 
         <!-- Login Form -->
         <div id="login-form" class="form-container">
             <h2>Login</h2>
-            <form method="post" action="@Url.Action("Login", "Account")">
+            <form method="post" action="@Url.Action("UserLogin", "Account")">
                 @Html.AntiForgeryToken() <!-- CSRF koruması -->
                 <input type="email" name="email" placeholder="Email" required />
                 <input type="password" name="password" placeholder="Password" required />
@@ -111,16 +169,28 @@
         </div>
 
         <!-- Register Form -->
-        <div id="register-form" class="form-container" style="display: none;">
+        <div id="register-form" class="form-container" style="display:none;">
             <h2>Register</h2>
-            <form method="post" action="@Url.Action("Register", "Account")">
-                @Html.AntiForgeryToken() <!-- CSRF koruması -->
-                <input type="text" name="firstName" placeholder="Name" required />
-                <input type="text" name="lastName" placeholder="Surname" required />
-                <input type="email" name="email" placeholder="Email" required />
-                <input type="password" name="password" placeholder="Password" required />
-                <input type="password" name="confirmPassword" placeholder="Confirm Password" required />
-                <button type="submit">Register</button>
+            <form method="post" asp-action="Register" asp-controller="Account" onsubmit="return validatePassword()">
+                @Html.AntiForgeryToken()
+                <span asp-validation-summary="ModelOnly" class="text-danger mb-2"></span>
+
+                <input asp-for="UserName" placeholder="First Name" class="form-control mb-2" />
+                <span asp-validation-for="UserName" class="text-danger"></span>
+
+                <input asp-for="UserSurname" placeholder="Last Name" class="form-control mb-2" />
+                <span asp-validation-for="UserSurname" class="text-danger"></span>
+
+                <input asp-for="UserEmail" placeholder="Email" class="form-control mb-2" />
+                <span asp-validation-for="UserEmail" class="text-danger"></span>
+
+                <input asp-for="UserPassword" type="password" placeholder="Password" class="form-control mb-2" id="UserPassword" />
+                <span asp-validation-for="UserPassword" class="text-danger"></span>
+
+                <input name="confirmPassword" type="password" placeholder="Confirm Password" class="form-control mb-2" id="ConfirmPassword" />
+                <span id="confirmPasswordError" class="text-danger"></span>
+
+                <button type="submit" class="btn btn-primary w-100">Register</button>
             </form>
         </div>
     </div>
@@ -128,25 +198,38 @@
 
 @section Scripts {
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const loginToggle = document.getElementById("login-toggle");
-            const registerToggle = document.getElementById("register-toggle");
-            const loginForm = document.querySelector("#login-form");
-            const registerForm = document.querySelector("#register-form");
+                const toggle = document.getElementById("loginRegisterToggle");
+                const loginForm = document.getElementById("login-form");
+                const registerForm = document.getElementById("register-form");
 
-            loginToggle.addEventListener("click", function () {
                 loginForm.style.display = "block";
                 registerForm.style.display = "none";
-                loginToggle.classList.add("active");
-                registerToggle.classList.remove("active");
-            });
 
-            registerToggle.addEventListener("click", function () {
-                registerForm.style.display = "block";
-                loginForm.style.display = "none";
-                registerToggle.classList.add("active");
-                loginToggle.classList.remove("active");
-            });
-        });
+                // When toggling
+                toggle.addEventListener("change", function () {
+                    if (this.checked) {
+                        // Show register, hide login
+                        loginForm.style.display = "none";
+                        registerForm.style.display = "block";
+                    } else {
+                        // Show login, hide register
+                        loginForm.style.display = "block";
+                        registerForm.style.display = "none";
+                    }
+                });
+
+        function validatePassword() {
+            const password = document.getElementById("UserPassword").value;
+            const confirmPassword = document.getElementById("ConfirmPassword").value;
+            const errorSpan = document.getElementById("confirmPasswordError");
+
+            if (password !== confirmPassword) {
+                errorSpan.textContent = "Passwords do not match.";
+                return false;
+            }
+
+            errorSpan.textContent = "";
+            return true;
+        }
     </script>
 }

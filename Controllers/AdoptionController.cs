@@ -21,7 +21,7 @@ namespace animal_shelter_app.Controllers
             if (!userId.HasValue)
             {
                 // Not logged in => Redirect to login page
-                return RedirectToAction("Login", "Account");
+                return RedirectToAction("UserLogin", "Account");
             }
 
             // Find user from database
@@ -30,7 +30,7 @@ namespace animal_shelter_app.Controllers
             {
                 // Session exists but user not found => force logout & redirect
                 HttpContext.Session.Clear();
-                return RedirectToAction("Login", "Account");
+                return RedirectToAction("UserLogin", "Account");
             }
 
             // Find animal
