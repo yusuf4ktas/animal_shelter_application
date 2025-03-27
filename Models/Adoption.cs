@@ -29,9 +29,9 @@ namespace animal_shelter_app.Models
         //Navigation properties 
         [ForeignKey("AnimalId")]
         public AnimalInformation? AnimalInformation { get; set; }
-        
 
-      
+
+
 
 
     }

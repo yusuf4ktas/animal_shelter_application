@@ -1,4 +1,5 @@
 ﻿@model animal_shelter_app.Models.AnimalInformation
+
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "Animal Details";
@@ -34,10 +35,62 @@
                 <p>Chronic Disease: @(Model.HealthCondition.ChronicDisease ? "Yes" : "No")</p>
             }
 
-            <form method="post" action="/Adoption/Adopt">
-                <input type="hidden" name="animalId" value="@Model.AnimalId" />
-                <button type="submit" class="btn btn-success mt-3">Adopt</button>
-            </form>
+            <!-- Adopt Button (Shows the form when clicked) -->
+            <button id="adoptButton" onclick="showAdoptionForm()" class="btn btn-success mt-3">Adopt</button>
+
+            <!-- Hidden form for adoption date and address -->
+            <div id="adoptionForm" style="display: none; margin-top: 20px;">
+                <form method="post" action="@Url.Action("Adopt", "Adoption")">
+                    <input type="hidden" name="animalId" value="@Model.AnimalId" />
+
+                    <div>
+                        <label for="AdoptionDate">Adoption Date:</label>
+                        <input type="date" name="adoptionDate" required min="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                    </div>
+
+
+                    <div>
+                        <label for="AdoptionTime">Adoption Time:</label>
+                        <input type="time" name="adoptionTime" required min="08:00" max="18:00" />
+                    </div>
+
+                    <div>
+                        <label for="UserAddress">Address:</label>  
+                        <input type="text" name="userAddress" required />
+                    </div>
+
+                    @if (ViewData.ModelState != null && ViewData.ModelState.IsValid == false)
+                    {
+                        <div class="alert alert-danger mt-2">
+                            <ul>
+                                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                                {
+                                    <li>@error.ErrorMessage</li>
+                                }
+                            </ul>
+                        </div>
+                    }
+
+                    <button type="submit" class="btn btn-primary mt-3">Submit Adoption</button>
+                </form>
+            </div>
         </div>
     </div>
 </div>
+
+<script>
+    function showAdoptionForm() {
+        // Check if the user is logged in before showing the form
+        fetch('@Url.Action("CheckLoginStatus", "Adoption")') // Call an endpoint that checks if the user is logged in
+            .then(response => response.json())
+            .then(data => {
+                if (!data.isLoggedIn) {
+                    window.location.href = '@Url.Action("UserLogin", "Account")'; // Redirect to login page if not logged in
+                } else {
+                    // Show the adoption form if logged in
+                    document.getElementById("adoptionForm").style.display = "block";
+                    document.getElementById("adoptButton").style.display = "none";
+                }
+            });
+    }
+</script>
