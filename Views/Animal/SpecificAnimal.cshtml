@@ -11,7 +11,7 @@
         <div class="col-md-6">
             @if (!string.IsNullOrEmpty(Model.AnimalImage))
             {
-                <img src="@Model.AnimalImage" alt="Animal" class="img-fluid rounded" />
+                <img src="@Model.AnimalImage" alt="Animal Image" class="img-fluid rounded" />
             }
             else
             {
@@ -22,23 +22,58 @@
         <!-- Right side: info -->
         <div class="col-md-6">
             <h2>Animal ID: @Model.AnimalId</h2>
-            <p>Species: @Model.Species</p>
-            <p>Age: @Model.AnimalAge</p>
-            <p>Gender: @(Model.AnimalGender ? "Female" : "Male")</p>
-            <p>Neutering Status: @(Model.NeuteringStatus ? "Neutered" : "Not Neutered")</p>
-            <p>Characteristic Features: @Model.CharacteristicFeatures</p>
+            <p><strong>Species:</strong> @Model.AnimalSpecies?.AnimalSpecies</p>  <!-- Using specific species as names; Pitbull,Scottish Cat etc.. -->
+            <p><strong>Age:</strong> @Model.AnimalAge</p>
+            <p><strong>Gender:</strong> @(Model.AnimalGender ? "Female" : "Male")</p>
+            <p><strong>Neutering Status:</strong> @(Model.NeuteringStatus ? "Neutered" : "Not Neutered")</p>
+            <p><strong>Characteristic Features:</strong> @Model.CharacteristicFeatures</p>
+            
+            <!-- Chronic Disease Status Section: Show dropdown if ChronicDiseaseStatus is true, using ChronicDiseaseDetails -->
+            <p>
+                <strong>Chronic Disease:</strong> @(Model.HealthCondition != null && Model.HealthCondition.ChronicDiseaseStatus ? "Yes" : "No")
+                @if (Model.HealthCondition != null && Model.HealthCondition.ChronicDiseaseStatus)
+                {
+                    <button class="btn btn-link p-0" type="button" data-bs-toggle="collapse" data-bs-target="#chronicDetails" aria-expanded="false" aria-controls="chronicDetails">
+                        <i class="bi bi-caret-down-fill"></i>
+                    </button>
+                }
+            </p>
+                    @if (Model.HealthCondition != null && Model.HealthCondition.ChronicDiseaseStatus)
+            {
+                <div class="collapse" id="chronicDetails">
+                    <div class="card card-body">
+                                <p>@(string.IsNullOrEmpty(Model.HealthCondition.ChronicDiseaseDetails) ? "No additional chronic disease details." : Model.HealthCondition.ChronicDiseaseDetails)</p>
+                    </div>
+                </div>
+            }
+
+            <!-- Disability Status Section: Show dropdown if DisabilityStatus is true, using DisabilityDetails -->
+            <p>
+                <strong>Disability Status:</strong> @(Model.HealthCondition != null && Model.HealthCondition.DisabilityStatus ? "Yes" : "No")
+                @if (Model.HealthCondition != null && Model.HealthCondition.DisabilityStatus)
+                {
+                    <button class="btn btn-link p-0" type="button" data-bs-toggle="collapse" data-bs-target="#disabilityDetails" aria-expanded="false" aria-controls="disabilityDetails">
+                        <i class="bi bi-caret-down-fill"></i>
+                    </button>
+                }
+            </p>
+            @if (Model.HealthCondition != null && Model.HealthCondition.DisabilityStatus)
+            {
+                <div class="collapse" id="disabilityDetails">
+                    <div class="card card-body">
+                        <p>@(string.IsNullOrEmpty(Model.HealthCondition.DisabilityDetails) ? "No additional disability details." : Model.HealthCondition.DisabilityDetails)</p>
+                    </div>
+                </div>
+            }
 
             @if (Model.HealthCondition != null)
             {
-                <p>Health Check-up Date: @Model.HealthCondition.HealthCheckUpDate</p>
-                <p>Disability Status: @(Model.HealthCondition.DisabilityStatus ? "Yes" : "No")</p>
-                <p>Chronic Disease: @(Model.HealthCondition.ChronicDisease ? "Yes" : "No")</p>
+                <p><strong>Health Check-up Date:</strong> @Model.HealthCondition.HealthCheckUpDate?.ToString("yyyy-MM-dd")</p>
             }
 
-            <!-- Adopt Button (Shows the form when clicked) -->
+            <!-- Adopt Button -->
             <button id="adoptButton" onclick="showAdoptionForm()" class="btn btn-success mt-3">Adopt</button>
 
-            <!-- Hidden form for adoption date and address -->
             <div id="adoptionForm" style="display: none; margin-top: 20px;">
                 <form method="post" action="@Url.Action("Adopt", "Adoption")">
                     <input type="hidden" name="animalId" value="@Model.AnimalId" />
@@ -55,7 +90,7 @@
                     </div>
 
                     <div>
-                        <label for="UserAddress">Address:</label>  
+                        <label for="UserAddress">Address:</label>
                         <input type="text" name="userAddress" required />
                     </div>
 

@@ -53,7 +53,7 @@ namespace animal_shelter_app.Controllers
             {
                 // If the date and time are not valid, return an error
                 ModelState.AddModelError(string.Empty, "Invalid adoption date and/or time.");
-                return View("Adopt", new { animalId = animalId });
+                return View("Adopt", new {animalId = animalId });
             }
 
             // Create a new adoption record

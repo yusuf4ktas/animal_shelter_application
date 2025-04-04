@@ -20,7 +20,7 @@ namespace animal_shelter_app.Models
         [Column("life_expectancy")]
         public int LifeExpectancy { get; set; }
 
-        //If you want a navigation property back to AnimalInformation
+        //Navigation Property
         [ForeignKey("AnimalId")]
         public AnimalInformation? AnimalInformation { get; set; }
     }

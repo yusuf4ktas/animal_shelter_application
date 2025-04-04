@@ -46,6 +46,7 @@ namespace animal_shelter_app.Controllers
         {
             var animal = await _context.AnimalInformations
                                        .Include(a => a.HealthCondition)
+                                       .Include(a => a.AnimalSpecies)
                                        .FirstOrDefaultAsync(a => a.AnimalId == id);
 
             if (animal == null) return NotFound();

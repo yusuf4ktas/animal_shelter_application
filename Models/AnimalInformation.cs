@@ -31,15 +31,14 @@ namespace animal_shelter_app.Models
         [Column("animal_image")]
         public string? AnimalImage { get; set; }
 
-
         [Column("species")]
         public string Species { get; set; }
 
         [Column("isAdopted")]
         public bool IsAdopted { get; set; } = false;
 
-
         public AnimalHealthCondition? HealthCondition { get; set; }
+        public AnimalType? AnimalSpecies { get; set; }
 
     }
 }
