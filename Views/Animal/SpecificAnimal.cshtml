@@ -71,6 +71,29 @@
                 <p><strong>Health Check-up Date:</strong> @Model.HealthCondition.HealthCheckUpDate?.ToString("yyyy-MM-dd")</p>
             }
 
+
+
+
+            @if (TempData["Message"] != null)
+            {
+                <div class="alert alert-success">
+                    @TempData["Message"]
+                </div>
+
+                <script>
+                    document.addEventListener("DOMContentLoaded", function () {
+                        var adoptButton = document.getElementById("adoptButton");
+                        if (adoptButton) {
+                            adoptButton.style.display = "none";
+                        }
+                    });
+                </script>
+
+
+            }
+
+
+
             <!-- Adopt Button -->
             <button id="adoptButton" onclick="showAdoptionForm()" class="btn btn-success mt-3">Adopt</button>
 

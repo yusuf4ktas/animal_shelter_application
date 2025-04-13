@@ -77,8 +77,15 @@ namespace animal_shelter_app.Controllers
             // Save changes to the database
             _context.SaveChanges();
 
-            // Redirect to the user's page after the adoption process
-            return RedirectToAction("UserPage", "Account"); // Or the relevant page you want to redirect to
+            /////////////////////////////////////////////////////////////////
+
+            TempData["Message"] = "You adopted animal successfully!";
+           // TempData["UserAlreadyAdopted"] = true;
+            return RedirectToAction("SpecificAnimal", "Animal", new { id = animalId });
+
+            /////////////////////////////////////////////////////////////////////
+
+           
         }
 
         // Check login status 
