@@ -4,147 +4,207 @@
 }
 
 <style>
+    body {
+        background-image: url('/images/adminpattern.jpg');
+        background-repeat: repeat;
+        background-size: contain;
+        background-color: #f0f0f0; /* biraz daha açık gri */
+    }
+
     .login-container {
         display: flex;
-        flex-direction: row;
-        justify-content: center;
-        align-items: center;
         width: 900px;
         height: 600px;
-        background-color: #fff;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        border-radius: 10px;
+        background-color: #fff; /* ARKA PLAN BEYAZ KALDI */
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+        border-radius: 12px;
         overflow: hidden;
         margin: auto;
         position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
+        border: 2px solid #666; /* koyu gri kenarlık */
     }
 
-    .login-left {
+    .login-left, .login-right {
         flex: 1;
-        position: relative;
-        height: 100%;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        padding: 20px;
-        box-sizing: border-box;
+        padding: 30px;
     }
 
         .login-left img {
             max-width: 100%;
-            max-height: 70%;
+            max-height: 75%;
+            border-radius: 12px;
             object-fit: cover;
-            border-radius: 10px;
         }
 
-        .login-left .slogan {
-            margin-top: 15px;
-            font-size: 18px;
-            font-weight: 600;
-            color: #555;
-            text-align: center;
-        }
-
-        .login-left::after {
-            content: "";
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 3px;
-            height: 100%;
-            background-color: lightgrey;
-        }
-
-    .login-right {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: 100%;
+    .slogan {
+        font-style: italic;
+        font-size: 24px;
+        color: #4a4a4a; /* koyu gri */
+        margin-top: 20px;
+        text-align: center;
+        max-width: 80%;
     }
 
     .form-container {
         width: 100%;
-        max-width: 300px;
+        max-width: 350px;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        height: auto;
-        padding: 30px 0;
+        padding: 20px 0;
         position: relative;
     }
 
         .form-container h2 {
-            margin: 10px 0 20px 0;
-            font-size: 22px;
+            margin-bottom: 20px;
+            font-size: 26px;
             font-weight: bold;
-            color: #333;
+            color: #333; /* çok koyu gri */
+            text-align: center;
+            letter-spacing: 1px;
         }
 
-        .form-container input {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
+    .input-group {
+        position: relative;
+        width: 100%;
+        margin-bottom: 20px;
+    }
 
-        .form-container button {
+        .input-group input {
             width: 100%;
-            padding: 10px;
-            background-color: #007bff;
-            color: #fff;
+            padding: 14px 10px 6px;
             border: none;
-            border-radius: 5px;
-            cursor: pointer;
+            border-bottom: 2px solid #999; /* gri çizgi */
+            background: transparent;
+            font-size: 16px;
+            color: #333;
+            outline: none;
+            transition: border-color 0.3s;
         }
 
-            .form-container button:hover {
-                background-color: #0056b3;
+            .input-group input:focus {
+                border-bottom-color: #444; /* koyu gri */
             }
+
+        .input-group label {
+            position: absolute;
+            top: 14px;
+            left: 10px;
+            color: #777; /* gri etiket */
+            font-size: 16px;
+            pointer-events: none;
+            transition: 0.3s ease all;
+        }
+
+        .input-group input:focus + label,
+        .input-group input:not(:placeholder-shown) + label {
+            top: -8px;
+            font-size: 12px;
+            color: #444;
+            background-color: #fff; /* beyaz konteynerle uyumlu */
+            padding: 0 4px;
+        }
+
+    .form-container button {
+        width: 100%;
+        padding: 12px;
+        background-color: #666;
+        color: #fff;
+        border: none;
+        border-radius: 30px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+        .form-container button:hover {
+            background-color: #444;
+        }
+
+    .custom-btn {
+        background: linear-gradient(135deg, #555, #888);
+        border: none;
+        color: white;
+        font-weight: 600;
+        padding: 12px;
+        border-radius: 8px;
+        transition: 0.3s;
+        width: 100%;
+    }
+
+        .custom-btn:hover {
+            background: linear-gradient(135deg, #333, #666);
+        }
 
     .return-link {
         display: block;
         margin-top: 15px;
         font-size: 14px;
-        color: #007bff;
+        color: #666;
         text-decoration: none;
         text-align: center;
     }
 
         .return-link:hover {
             text-decoration: underline;
+            color: #444;
         }
+
+    .text-danger {
+        font-size: 0.875rem;
+        color: red;
+    }
+
+    .eye-toggle {
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        transform: translateY(-50%);
+        font-size: 1.2rem;
+        cursor: pointer;
+        color: #999;
+    }
 </style>
 
 <div class="login-container">
     <!-- Left Side: Image -->
     <div class="login-left">
-        <img src="/images/login_image.jpg" alt="Admin Login Image" />
-        <div class="slogan">“Great happiness with little paws!”</div>
+        <img src="/images/admin_login.jpg" alt="Admin Login Image" />
+        <div class="slogan">“Guardians of the Voiceless – Secure Access Only.”</div>
     </div>
 
     <!-- Right Side: Admin Login Form -->
     <div class="login-right">
         <div class="form-container">
-            <h2>Admin Login</h2>
+            <h2 class="admin-heading">Enter Admin Console</h2>
             <form method="post" asp-action="AdminLogin" asp-controller="Account">
                 @Html.AntiForgeryToken()
 
-                <input type="email" name="email" placeholder="Email" required />
-                <input type="password" name="password" placeholder="Password" required />
+                <div class="input-group">
+                    <input type="email" name="email" id="email" required placeholder=" " />
+                    <label for="email">Email</label>
+                </div>
+
+                <div class="input-group">
+                    <input type="password" name="password" id="password" required placeholder=" " />
+                    <label for="password">Password</label>
+                </div>
 
                 <button type="submit">Login</button>
             </form>
+
 
             <!-- Return Link -->
             <a href="@Url.Action("UserLogin", "Account")" class="return-link">Log in as user</a>
         </div>
     </div>
 </div>
+
