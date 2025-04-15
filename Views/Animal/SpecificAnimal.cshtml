@@ -46,13 +46,19 @@
 
         .animal-details-card {
             background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Gölgeleme */
             padding: 20px;
+            transition: transform 0.3s, background-color 0.3s; /* Animasyon efekti */
         }
 
+            .animal-details-card:hover {
+                transform: scale(1.05); /* Hover efektiyle kart büyür */
+                background-color: #F5EDDC; /* Kart rengi değişir */
+            }
+
         .animal-image-section {
-            border-radius: 8px;
+            border-radius: 15px;/*Yumuşak köşeler*/
             overflow: hidden;
             margin-bottom: 20px;
         }
@@ -60,14 +66,22 @@
         .animal-image {
             width: 100%;
             display: block;
+            border-radius: 15px; /* Görselin kenarları yuvarlatılmış */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Hafif gölge efekti */
         }
 
         .animal-info-section h2 {
             margin-top: 0;
             margin-bottom: 15px;
-            font-size: 2.2em;
+            font-size: 2.5em; /* Başlık daha büyük */
             font-weight: bold;
+            color: #8B5A2B; /* Başlık rengi */
+            transition: transform 0.3s ease; /* Animasyon efekti */
         }
+
+            .animal-info-section h2:hover {
+                transform: scale(1.1); /* Hover efekti ile büyüme */
+            }
 
         .animal-info-item {
             margin-bottom: 10px;
@@ -92,10 +106,17 @@
             padding: 12px 25px;
             font-size: 1.1em;
             border: none;
-            border-radius: 6px;
+            border-radius: 30px; /* Yuvarlatılmış köşeler */
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            background-color: #D4A373; /* Buton arka plan rengi */
+            color: white; /* Metin rengi */
+            transition: background-color 0.3s, transform 0.3s; /* Animasyon efekti */
         }
+
+            .adopt-button:hover {
+                background-color: #8B5A2B; /* Hover rengi */
+                transform: scale(1.05); /* Hoverda büyüme efekti */
+            }
 
         #adoptionForm {
             margin-top: 20px;
@@ -129,7 +150,14 @@
                 border-radius: 6px;
                 cursor: pointer;
                 transition: background-color 0.3s ease;
+                background-color: #D4A373; /* D4A373 rengi */
+                color: white;
             }
+
+                .adopt-button:hover,
+                #adoptionForm button[type="submit"]:hover {
+                    background-color: #8B5A2B; /* 8B5A2B rengi */
+                }
 
         .alert {
             margin-top: 20px;
@@ -185,18 +213,18 @@
 
             body.dog-theme .animal-info-section h2,
             body.dog-theme .animal-info-item strong {
-                color: #4682b4; /* Steel Blue */
+                color: #8c9d6c; /* Steel Blue */
             }
 
             body.dog-theme .adopt-button,
             body.dog-theme #adoptionForm button[type="submit"] {
-                background-color: #4682b4;
+                background-color: #8c9d6c;
                 color: white;
             }
 
                 body.dog-theme .adopt-button:hover,
                 body.dog-theme #adoptionForm button[type="submit"]:hover {
-                    background-color: #3670a2;
+                    background-color: #d9d55e;
                 }
 
             body.dog-theme .alert-success {
