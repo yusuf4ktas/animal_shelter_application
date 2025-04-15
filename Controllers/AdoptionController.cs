@@ -79,7 +79,7 @@ namespace animal_shelter_app.Controllers
 
             /////////////////////////////////////////////////////////////////
 
-            TempData["Message"] = "You adopted animal successfully!";
+            TempData["Message"] = "You adopted the animal successfully!";
            // TempData["UserAlreadyAdopted"] = true;
             return RedirectToAction("SpecificAnimal", "Animal", new { id = animalId });
 

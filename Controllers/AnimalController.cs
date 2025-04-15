@@ -29,7 +29,7 @@ namespace animal_shelter_app.Controllers
         [HttpGet]
         public IActionResult List(string species)
         {
-            var query = _context.AnimalInformations.Where(a => !a.IsAdopted);
+            var query = _context.AnimalInformations.AsQueryable();
             if (!string.IsNullOrEmpty(species))
                 query = query.Where(a => a.Species.Equals(species, StringComparison.OrdinalIgnoreCase));
 
@@ -39,6 +39,7 @@ namespace animal_shelter_app.Controllers
 
             return View("ListAnimal", query.ToList());
         }
+
 
         // GET: /Animal/SpecificAnimal
         [HttpGet]

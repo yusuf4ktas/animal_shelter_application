@@ -2,19 +2,104 @@
 @{
     ViewData["Title"] = "Home Page";
     Layout = "~/Views/Shared/_Layout.cshtml";
+    var uniqueSpecies = Model.Select(a => a.Species).Distinct().OrderBy(s => s).ToList();
 }
 
-<div class="container mt-4">
-    <h2 class="text-center mb-4">Welcome to the Animal Shelter</h2>
-    <h3 class="mt-4 text-center">@ViewBag.Filter</h3>
+<div class="container my-4">
+    <style>
+        /* Optional additional styling for filtering bar */
+        #filterForm .form-select {
+            border-radius: 20px;
+        }
 
+        #filterForm button {
+            border-radius: 20px;
+        }
 
+        #clearFiltersBtn {
+            border-radius: 20px;
+            padding: 0.375rem 0.75rem; /* Match button padding */
+            font-size: 1rem; /* Match button font-size */
+            line-height: 1.5; /* Match button line-height */
+        }
+    </style>
+
+    <form id="filterForm" method="get" action="@Url.Action("Index", "Home")">
+        <div class="row align-items-end gy-2">
+            <div class="col-sm-3">
+                <label for="species" class="form-label">Species</label>
+                <select class="form-select" id="species" name="species">
+                    <option value="">All</option>
+                    @foreach (var species in uniqueSpecies)
+                    {
+                        <option value="@species">@species</option>
+                    }
+                </select>
+            </div>
+            <div class="col-sm-3">
+                <label for="neutered" class="form-label">Neutering Status</label>
+                <select class="form-select" id="neutered" name="neutered">
+                    <option value="">All</option>
+                    <option value="true">Neutered</option>
+                    <option value="false">Not Neutered</option>
+                </select>
+            </div>
+            <div class="col-sm-3">
+                <label for="adopted" class="form-label">Adoption Status</label>
+                <select class="form-select" id="adopted" name="adopted">
+                    <option value="">All</option>
+                    <option value="true">Adopted</option>
+                    <option value="false">Not Adopted</option>
+                </select>
+            </div>
+            <div class="col-sm-3">
+                <label for="animal_gender" class="form-label">Gender</label>
+                <select class="form-select" id="animal_gender" name="animal_gender">
+                    <option value="">All</option>
+                    <option value="0">Female</option>
+                    <option value="1">Male</option>
+                </select>
+            </div>
+            <div class="col-sm-3">
+                <label for="disability_status" class="form-label">Disability Status</label>
+                <select class="form-select" id="disability_status" name="disability_status">
+                    <option value="">All</option>
+                    <option value="false">No</option>
+                    <option value="true">Yes</option>
+                </select>
+            </div>
+            <div class="col-sm-3">
+                <label for="chronic_disease_status" class="form-label">Chronic Disease</label>
+                <select class="form-select" id="chronic_disease_status" name="chronic_disease_status">
+                    <option value="">All</option>
+                    <option value="0">Temporary</option>
+                    <option value="1">Permanent</option>
+                </select>
+            </div>
+            <div class="col-sm-3">
+                <label for="animal_age_range" class="form-label">Age Range</label>
+                <select class="form-select" id="animal_age_range" name="animal_age_range">
+                    <option value="">All</option>
+                    <option value="0-1">0-1</option>
+                    <option value="2-3">2-3</option>
+                    <option value="4-5">4-5</option>
+                    <option value="6-more">6+</option>
+                </select>
+            </div>
+            <div class="col-sm-3 d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Apply</button>
+                <button type="button" class="btn btn-secondary btn-sm" id="clearFiltersBtn">Clear Filters</button>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="container">
+    <h2 class="text-center mb-4">@ViewBag.Filter</h2>
     @if (Model != null && Model.Any())
     {
         foreach (var animal in Model)
         {
-            <div class="row mb-3">
-                <!-- Left side: image -->
+            <div class="row mb-3 align-items-center border-bottom pb-3">
                 <div class="col-md-3">
                     @if (!string.IsNullOrEmpty(animal.AnimalImage))
                     {
@@ -25,17 +110,21 @@
                         <p>No Image</p>
                     }
                 </div>
-
-                <!-- Right side: info -->
                 <div class="col-md-9">
-                    <h4>Animal ID: @animal.AnimalId</h4>
-                    <p>Species: @animal.Species</p>
-                    <p>Age: @animal.AnimalAge</p>
-                    <p>Gender: @(animal.AnimalGender ? "Female" : "Male")</p>
-                    <p>Neutering: @(animal.NeuteringStatus ? "Neutered" : "Not Neutered")</p>
-                    <a asp-action="SpecificAnimal" asp-controller="Animal"
-                       asp-route-id="@animal.AnimalId"
-                       class="btn btn-primary mt-2">
+                    <h5>Animal ID: @animal.AnimalId</h5>
+                    <p><strong>Species:</strong> @animal.Species</p>
+                    @if (!string.IsNullOrEmpty(animal.AnimalSpecies?.AnimalSpecies))
+                    {
+                        <p><strong>Specific Species:</strong> @animal.AnimalSpecies</p>
+                    }
+                    <p><strong>Age:</strong> @animal.AnimalAge</p>
+                    <p><strong>Gender:</strong> @(animal.AnimalGender ? "Female" : "Male")</p>
+                    @if (animal.HealthCondition != null)
+                    {
+                        <p><strong>Disability:</strong> @(animal.HealthCondition.DisabilityStatus ? "Yes" : "No")</p>
+                        <p><strong>Chronic Disease:</strong> @(animal.HealthCondition.ChronicDiseaseStatus == false ? "Permanent" : (animal.HealthCondition.ChronicDiseaseStatus == false ? "Temporary" : "No"))</p>
+                    }
+                    <a asp-action="SpecificAnimal" asp-controller="Animal" asp-route-id="@animal.AnimalId" class="btn btn-sm btn-primary">
                         View Details
                     </a>
                 </div>
@@ -44,6 +133,27 @@
     }
     else
     {
-        <p class="text-center">No animals found.</p>
+        <p class="text-center text-muted">No animals available.</p>
     }
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('filterForm');
+        const params = new URLSearchParams(window.location.search);
+
+        form.querySelectorAll('select').forEach(select => {
+            const paramValue = params.get(select.name);
+            if (paramValue) {
+                select.value = paramValue;
+            }
+        });
+
+        document.getElementById('clearFiltersBtn').addEventListener('click', function() {
+            form.querySelectorAll('select').forEach(select => {
+                select.value = '';
+            });
+            form.submit();
+        });
+    });
+</script>

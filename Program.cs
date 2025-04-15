@@ -10,15 +10,15 @@ Env.Load();
 // 2. Also add environment variables to configuration
 builder.Configuration.AddEnvironmentVariables();
 
-// orijinal part
+// Option 1 to try
 // 3. Retrieve MySQL connection string from environment variables or appsettings
-// var myConnStr = builder.Configuration.GetConnectionString("MySqlConnection");
-// Console.WriteLine("Connection String from .env or config: " + myConnStr);
+var myConnStr = builder.Configuration.GetConnectionString("MySqlConnection");
+Console.WriteLine("Connection String from .env or config: " + myConnStr);
 
-// hata aldýðým için bu adýmý aþaðýdaki þekilde düzenledim
+// Option 2 to try in case of connection error
 // 3. Retrieve MySQL connection string from .env
-var myConnStr = Environment.GetEnvironmentVariable("MySqlConnection");
-Console.WriteLine("Connection String from .env: " + myConnStr);
+//var myConnStr = Environment.GetEnvironmentVariable("MySqlConnection");
+//Console.WriteLine("Connection String from .env: " + myConnStr);
 
 // 4. Configure DbContext for MySQL + EF Core
 builder.Services.AddDbContext<ApplicationDbContext>(options =>

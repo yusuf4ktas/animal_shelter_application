@@ -1,85 +1,415 @@
-﻿@model animal_shelter_app.Models.AnimalInformation
+﻿@* Views/Animal/SpecificAnimal.cshtml *@
+@model animal_shelter_app.Models.AnimalInformation
 
 @{
-    Layout = "~/Views/Shared/_Layout.cshtml";
     ViewData["Title"] = "Animal Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string bodyClass = "";
+
+    switch (Model.Species?.ToLower()) //Theme choosing based on the species
+    {
+        case "dog":
+            bodyClass = "dog-theme";
+            break;
+        case "cat":
+            bodyClass = "cat-theme";
+            break;
+        case "bird":
+            bodyClass = "bird-theme";
+            break;
+        case "hamster":
+            bodyClass = "hamster-theme";
+            break;
+        case "rabbit":
+            bodyClass = "rabbit-theme";
+            break;
+        default:
+            bodyClass = "default-theme";
+            break;
+    }
+
+    ViewBag.BodyClass = bodyClass;
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container mt-4">
+@section Styles {
+    <style>
+        /* Base styles */
+        body {
+            font-family: sans-serif;
+            line-height: 1.6;
+        }
+
+        .container {
+            margin-top: 30px;
+        }
+
+        .animal-details-card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+
+        .animal-image-section {
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .animal-image {
+            width: 100%;
+            display: block;
+        }
+
+        .animal-info-section h2 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 2.2em;
+            font-weight: bold;
+        }
+
+        .animal-info-item {
+            margin-bottom: 10px;
+        }
+
+            .animal-info-item strong {
+                font-weight: bold;
+                color: #555;
+                margin-right: 5px;
+            }
+
+        .collapse-details {
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            background-color: #f9f9f9;
+        }
+
+        .adopt-button {
+            margin-top: 20px;
+            padding: 12px 25px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #adoptionForm {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 6px;
+            background-color: #f8f8f8;
+        }
+
+            #adoptionForm label {
+                display: block;
+                margin-bottom: 5px;
+                font-weight: bold;
+            }
+
+            #adoptionForm input[type="date"],
+            #adoptionForm input[type="time"],
+            #adoptionForm input[type="text"] {
+                width: 100%;
+                padding: 8px;
+                margin-bottom: 10px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                box-sizing: border-box;
+            }
+
+            #adoptionForm button[type="submit"] {
+                padding: 10px 20px;
+                font-size: 1em;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+            }
+
+        .alert {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+        }
+
+        .btn-link {
+            text-decoration: none;
+            color: inherit;
+        }
+
+            .btn-link:hover {
+                text-decoration: underline;
+            }
+
+        /* Theme colors */
+
+        /* Default theme */
+        body.default-theme .animal-info-section h2,
+        body.default-theme .animal-info-item strong {
+            color: #444;
+        }
+
+        body.default-theme .adopt-button,
+        body.default-theme #adoptionForm button[type="submit"] {
+            background-color: #5cb85c; /* Green */
+            color: white;
+        }
+
+            body.default-theme .adopt-button:hover,
+            body.default-theme #adoptionForm button[type="submit"]:hover {
+                background-color: #4cae4c;
+            }
+
+        body.default-theme .alert-success {
+            background-color: #dff0d8;
+            border-color: #d6e9c6;
+            color: #3c763d;
+        }
+
+        body.default-theme .alert-danger {
+            background-color: #fdd;
+            border-color: #fcc;
+            color: #c00;
+        }
+
+        /* Dog theme */
+        body.dog-theme {
+            background-color: #f0f8ff; /* Alice Blue */
+            color: #2f4f4f; /* Dark Slate Gray */
+        }
+
+            body.dog-theme .animal-info-section h2,
+            body.dog-theme .animal-info-item strong {
+                color: #4682b4; /* Steel Blue */
+            }
+
+            body.dog-theme .adopt-button,
+            body.dog-theme #adoptionForm button[type="submit"] {
+                background-color: #4682b4;
+                color: white;
+            }
+
+                body.dog-theme .adopt-button:hover,
+                body.dog-theme #adoptionForm button[type="submit"]:hover {
+                    background-color: #3670a2;
+                }
+
+            body.dog-theme .alert-success {
+                background-color: #e0f8f0;
+                border-color: #d0e8e0;
+                color: #2e8b57; /* Sea Green */
+            }
+
+            body.dog-theme .alert-danger {
+                background-color: #ffe0e0;
+                border-color: #ffc0c0;
+                color: #b22222; /* Firebrick */
+            }
+
+        /* Cat theme */
+        body.cat-theme {
+            background-color: #f5f5dc; /* Beige */
+            color: #696969; /* Dim Gray */
+        }
+
+            body.cat-theme .animal-info-section h2,
+            body.cat-theme .animal-info-item strong {
+                color: #808080; /* Gray */
+            }
+
+            body.cat-theme .adopt-button,
+            body.cat-theme #adoptionForm button[type="submit"] {
+                background-color: #dda0dd; /* Plum */
+                color: white;
+            }
+
+                body.cat-theme .adopt-button:hover,
+                body.cat-theme #adoptionForm button[type="submit"]:hover {
+                    background-color: #cc8fcc;
+                }
+
+            body.cat-theme .alert-success {
+                background-color: #f0e68c; /* Khaki */
+                border-color: #e0d67c;
+                color: #8b8b00; /* Dark Goldenrod */
+            }
+
+            body.cat-theme .alert-danger {
+                background-color: #ffdab9; /* Peachpuff */
+                border-color: #ffc089;
+                color: #d2691e; /* Chocolate */
+            }
+
+        /* Bird theme */
+        body.bird-theme {
+            background-color: #e0ffff; /* Light Cyan */
+            color: #008080; /* Teal */
+        }
+
+            body.bird-theme .animal-info-section h2,
+            body.bird-theme .animal-info-item strong {
+                color: #20b2aa; /* Light Sea Green */
+            }
+
+            body.bird-theme .adopt-button,
+            body.bird-theme #adoptionForm button[type="submit"] {
+                background-color: #20b2aa;
+                color: white;
+            }
+
+                body.bird-theme .adopt-button:hover,
+                body.bird-theme #adoptionForm button[type="submit"]:hover {
+                    background-color: #1a988f;
+                }
+
+            body.bird-theme .alert-success {
+                background-color: #98fb98; /* Pale Green */
+                border-color: #80ee80;
+                color: #006400; /* Dark Green */
+            }
+
+            body.bird-theme .alert-danger {
+                background-color: #faebd7; /* Antique White */
+                border-color: #e6d1a7;
+                color: #a0522d; /* Sienna */
+            }
+
+        /* Hamster theme */
+        body.hamster-theme {
+            background-color: #fff8dc; /* Cornsilk */
+            color: #a0522d; /* Sienna */
+        }
+
+            body.hamster-theme .animal-info-section h2,
+            body.hamster-theme .animal-info-item strong {
+                color: #8b4513; /* SaddleBrown */
+            }
+
+            body.hamster-theme .adopt-button,
+            body.hamster-theme #adoptionForm button[type="submit"] {
+                background-color: #d2691e; /* Chocolate */
+                color: white;
+            }
+
+                body.hamster-theme .adopt-button:hover,
+                body.hamster-theme #adoptionForm button[type="submit"]:hover {
+                    background-color: #b0410e;
+                }
+
+            body.hamster-theme .alert-success {
+                background-color: #ffe4c4; /* Bisque */
+                border-color: #ffd3a7;
+                color: #a0522d; /* Sienna */
+            }
+
+            body.hamster-theme .alert-danger {
+                background-color: #ffe4e1; /* MistyRose */
+                border-color: #ffb0b0;
+                color: #cd5c5c; /* IndianRed */
+            }
+
+        /* Rabbit theme */
+        body.rabbit-theme {
+            background-color: #f0fff0; /* Honeydew */
+            color: #483d8b; /* DarkSlateBlue */
+        }
+
+            body.rabbit-theme .animal-info-section h2,
+            body.rabbit-theme .animal-info-item strong {
+                color: #6a5acd; /* SlateBlue */
+            }
+
+            body.rabbit-theme .adopt-button,
+            body.rabbit-theme #adoptionForm button[type="submit"] {
+                background-color: #8fbc8f; /* DarkSeaGreen */
+                color: white;
+            }
+
+                body.rabbit-theme .adopt-button:hover,
+                body.rabbit-theme #adoptionForm button[type="submit"]:hover {
+                    background-color: #77a177;
+                }
+
+            body.rabbit-theme .alert-success {
+                background-color: #e6e6fa; /* Lavender */
+                border-color: #d6d6f0;
+                color: #483d8b; /* DarkSlateBlue */
+            }
+
+            body.rabbit-theme .alert-danger {
+                background-color: #fff0f5; /* LavenderBlush */
+                border-color: #ffe6f0;
+                color: #c71585; /* MediumVioletRed */
+            }
+    </style>
+}
+
+<div class="container animal-details-card">
     <div class="row">
         <!-- Left side: bigger image -->
-        <div class="col-md-6">
+        <div class="col-md-6 animal-image-section">
             @if (!string.IsNullOrEmpty(Model.AnimalImage))
             {
-                <img src="@Model.AnimalImage" alt="Animal Image" class="img-fluid rounded" />
+                <img src="@Model.AnimalImage" alt="Animal Image" class="animal-image" />
             }
             else
             {
-                <p>No Image</p>
+                <p>No Image Available</p>
             }
         </div>
-
         <!-- Right side: info -->
-        <div class="col-md-6">
-            <h2>Animal ID: @Model.AnimalId</h2>
-            <p><strong>Species:</strong> @Model.AnimalSpecies?.AnimalSpecies</p>  <!-- Using specific species as names; Pitbull,Scottish Cat etc.. -->
-            <p><strong>Age:</strong> @Model.AnimalAge</p>
-            <p><strong>Gender:</strong> @(Model.AnimalGender ? "Female" : "Male")</p>
-            <p><strong>Neutering Status:</strong> @(Model.NeuteringStatus ? "Neutered" : "Not Neutered")</p>
-            <p><strong>Characteristic Features:</strong> @Model.CharacteristicFeatures</p>
-            
+        <div class="col-md-6 animal-info-section">
+            <h2>@Model.AnimalSpecies?.AnimalSpecies</h2>
+            <p class="animal-info-item"><strong>ID:</strong> @Model.AnimalId</p>
+            <p class="animal-info-item"><strong>Age:</strong> @Model.AnimalAge</p>
+            <p class="animal-info-item"><strong>Gender:</strong> @(Model.AnimalGender ? "Female" : "Male")</p>
+            <p class="animal-info-item"><strong>Neutered:</strong> @(Model.NeuteringStatus ? "Yes" : "No")</p>
+            <p class="animal-info-item"><strong>Features:</strong> @Model.CharacteristicFeatures</p>
+
             <!-- Chronic Disease Status Section: Show dropdown if ChronicDiseaseStatus is true, using ChronicDiseaseDetails -->
-            <p>
+
+            <div class="animal-info-item">
                 <strong>Chronic Disease:</strong> @(Model.HealthCondition != null && Model.HealthCondition.ChronicDiseaseStatus ? "Yes" : "No")
                 @if (Model.HealthCondition != null && Model.HealthCondition.ChronicDiseaseStatus)
                 {
                     <button class="btn btn-link p-0" type="button" data-bs-toggle="collapse" data-bs-target="#chronicDetails" aria-expanded="false" aria-controls="chronicDetails">
-                        <i class="bi bi-caret-down-fill"></i>
+                        <i class="bi bi-caret-down-fill"></i> Details
                     </button>
-                }
-            </p>
-                    @if (Model.HealthCondition != null && Model.HealthCondition.ChronicDiseaseStatus)
-            {
-                <div class="collapse" id="chronicDetails">
-                    <div class="card card-body">
-                                <p>@(string.IsNullOrEmpty(Model.HealthCondition.ChronicDiseaseDetails) ? "No additional chronic disease details." : Model.HealthCondition.ChronicDiseaseDetails)</p>
+                    <div class="collapse collapse-details" id="chronicDetails">
+                        <p>@(string.IsNullOrEmpty(Model.HealthCondition.ChronicDiseaseDetails) ? "No additional details." : Model.HealthCondition.ChronicDiseaseDetails)</p>
                     </div>
-                </div>
-            }
+                }
+            </div>
 
             <!-- Disability Status Section: Show dropdown if DisabilityStatus is true, using DisabilityDetails -->
-            <p>
+            <div class="animal-info-item">
                 <strong>Disability Status:</strong> @(Model.HealthCondition != null && Model.HealthCondition.DisabilityStatus ? "Yes" : "No")
                 @if (Model.HealthCondition != null && Model.HealthCondition.DisabilityStatus)
                 {
                     <button class="btn btn-link p-0" type="button" data-bs-toggle="collapse" data-bs-target="#disabilityDetails" aria-expanded="false" aria-controls="disabilityDetails">
-                        <i class="bi bi-caret-down-fill"></i>
+                        <i class="bi bi-caret-down-fill"></i> Details
                     </button>
-                }
-            </p>
-            @if (Model.HealthCondition != null && Model.HealthCondition.DisabilityStatus)
-            {
-                <div class="collapse" id="disabilityDetails">
-                    <div class="card card-body">
-                        <p>@(string.IsNullOrEmpty(Model.HealthCondition.DisabilityDetails) ? "No additional disability details." : Model.HealthCondition.DisabilityDetails)</p>
+                    <div class="collapse collapse-details" id="disabilityDetails">
+                        <p>@(string.IsNullOrEmpty(Model.HealthCondition.DisabilityDetails) ? "No additional details." : Model.HealthCondition.DisabilityDetails)</p>
                     </div>
-                </div>
-            }
+                }
+            </div>
 
             @if (Model.HealthCondition != null)
             {
-                <p><strong>Health Check-up Date:</strong> @Model.HealthCondition.HealthCheckUpDate?.ToString("yyyy-MM-dd")</p>
+                <p class="animal-info-item"><strong>Last Check-up:</strong> @Model.HealthCondition.HealthCheckUpDate?.ToString("yyyy-MM-dd")</p>
             }
-
-
-
 
             @if (TempData["Message"] != null)
             {
                 <div class="alert alert-success">
                     @TempData["Message"]
                 </div>
-
                 <script>
                     document.addEventListener("DOMContentLoaded", function () {
                         var adoptButton = document.getElementById("adoptButton");
@@ -88,16 +418,13 @@
                         }
                     });
                 </script>
-
-
             }
 
-
-
             <!-- Adopt Button -->
-            <button id="adoptButton" onclick="showAdoptionForm()" class="btn btn-success mt-3">Adopt</button>
+            <button id="adoptButton" onclick="showAdoptionForm()" class="btn btn-success adopt-button">Adopt Me</button>
 
-            <div id="adoptionForm" style="display: none; margin-top: 20px;">
+            <div id="adoptionForm" style="display: none;">
+                <h3>Adoption Form</h3>
                 <form method="post" action="@Url.Action("Adopt", "Adoption")">
                     <input type="hidden" name="animalId" value="@Model.AnimalId" />
 
@@ -106,14 +433,13 @@
                         <input type="date" name="adoptionDate" required min="@DateTime.Now.ToString("yyyy-MM-dd")" />
                     </div>
 
-
                     <div>
-                        <label for="AdoptionTime">Adoption Time:</label>
+                        <label for="AdoptionTime">Adoption Time (8:00 - 18:00):</label>
                         <input type="time" name="adoptionTime" required min="08:00" max="18:00" />
                     </div>
 
                     <div>
-                        <label for="UserAddress">Address:</label>
+                        <label for="UserAddress">Your Address:</label>
                         <input type="text" name="userAddress" required />
                     </div>
 
@@ -129,7 +455,7 @@
                         </div>
                     }
 
-                    <button type="submit" class="btn btn-primary mt-3">Submit Adoption</button>
+                    <button type="submit" class="btn btn-primary adopt-button">Submit Adoption</button>
                 </form>
             </div>
         </div>
@@ -142,8 +468,8 @@
         fetch('@Url.Action("CheckLoginStatus", "Adoption")') // Call an endpoint that checks if the user is logged in
             .then(response => response.json())
             .then(data => {
-                if (!data.isLoggedIn) {
-                    window.location.href = '@Url.Action("UserLogin", "Account")'; // Redirect to login page if not logged in
+                if (!data.isLoggedIn) { // Redirect to login page if not logged in
+                    window.location.href = '@Url.Action("UserLogin", "Account")';
                 } else {
                     // Show the adoption form if logged in
                     document.getElementById("adoptionForm").style.display = "block";
