@@ -4,6 +4,7 @@ using System.Linq;
 using animal_shelter_app.Models;
 using System.Security.Cryptography;
 using System.Text;
+using animal_shelter_app.Factories;
 
 namespace animal_shelter_app.Controllers
 {
@@ -31,8 +32,10 @@ namespace animal_shelter_app.Controllers
                 return View();
             }
 
-            var hashedPassword = Models.User.HashPassword(password);
-            var user = _dbContext.Users.FirstOrDefault(u => u.UserEmail == email && u.UserPassword == hashedPassword && !u.UserRole);
+            var factory = new UserAuthFactory(_dbContext);
+            var authService = factory.CreateAuthService();
+            var user = authService.Authenticate(email, password);
+
 
             if (user == null)
             {
@@ -70,8 +73,10 @@ namespace animal_shelter_app.Controllers
                 return View();
             }
 
-            var hashedPassword = Models.User.HashPassword(password);
-            var admin = _dbContext.Users.FirstOrDefault(u => u.UserEmail == email && u.UserPassword == hashedPassword && u.UserRole);
+            var factory = new AdminAuthFactory(_dbContext);
+            var authService = factory.CreateAuthService();
+            var admin = authService.Authenticate(email, password);
+
 
             if (admin == null)
             {

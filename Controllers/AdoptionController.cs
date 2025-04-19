@@ -77,13 +77,13 @@ namespace animal_shelter_app.Controllers
             // Save changes to the database
             _context.SaveChanges();
 
-            /////////////////////////////////////////////////////////////////
+            
 
             TempData["Message"] = "You adopted the animal successfully!";
            // TempData["UserAlreadyAdopted"] = true;
             return RedirectToAction("SpecificAnimal", "Animal", new { id = animalId });
 
-            /////////////////////////////////////////////////////////////////////
+            
 
            
         }

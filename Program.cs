@@ -2,6 +2,7 @@ using animal_shelter_app.Models;
 using Microsoft.EntityFrameworkCore;
 using DotNetEnv;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // 1. Load .env file with DotNetEnv
@@ -37,6 +38,9 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
+
+
+
 
 // Build the app
 var app = builder.Build();
