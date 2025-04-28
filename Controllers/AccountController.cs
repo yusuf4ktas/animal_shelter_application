@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Http;
 using System.Linq;
 using animal_shelter_app.Models;
-using System.Security.Cryptography;
-using System.Text;
 using animal_shelter_app.Factories;
+using animal_shelter_app.Models.ViewModels;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace animal_shelter_app.Controllers
 {
@@ -17,11 +17,19 @@ namespace animal_shelter_app.Controllers
             _dbContext = dbContext;
         }
 
-        // GET: User Login Page
+        // GET: /Account/UserLogin
         [HttpGet]
-        public IActionResult UserLogin() => View();
+        public IActionResult UserLogin()
+        {
+            // show "Registration successful" if we just came from Register
+            if (TempData["SuccessMessage"] != null)
+            {
+                ViewBag.SuccessMessage = TempData["SuccessMessage"];
+            }
+            return View();
+        }
 
-        // POST: User Login
+        // POST: /Account/UserLogin
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult UserLogin(string email, string password)
@@ -36,7 +44,6 @@ namespace animal_shelter_app.Controllers
             var authService = factory.CreateAuthService();
             var user = authService.Authenticate(email, password);
 
-
             if (user == null)
             {
                 ModelState.AddModelError("", "Invalid login attempt.");
@@ -44,25 +51,62 @@ namespace animal_shelter_app.Controllers
             }
 
             SetSession(user, "User");
-            return RedirectToAction("UserPage");
+            return RedirectToAction(nameof(UserPage));
         }
 
-        // GET: Admin Login Page
+        // GET: /Account/Register
         [HttpGet]
-        public IActionResult AdminLogin() => View();
-
-        // GET: /Account/AdminPage
-        [HttpGet]
-        public IActionResult AdminPage()
+        public IActionResult Register()
         {
-            // Verify the user is admin
-            if (HttpContext.Session.GetString("UserRole") != "Admin")
-                return RedirectToAction("AdminLogin");
-
-            return View();
+            return RedirectToAction(nameof(UserLogin));
         }
 
-        // POST: Admin Login
+        // POST: /Account/Register
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Register(User userModel, string confirmPassword)
+        {
+            // basic server‐side validation
+            if (string.IsNullOrWhiteSpace(userModel.UserName) ||
+                string.IsNullOrWhiteSpace(userModel.UserSurname) ||
+                string.IsNullOrWhiteSpace(userModel.UserEmail) ||
+                string.IsNullOrWhiteSpace(userModel.UserPassword))
+            {
+                ModelState.AddModelError("", "All fields are required.");
+                return View(userModel);
+            }
+
+            if (userModel.UserPassword != confirmPassword)
+            {
+                ModelState.AddModelError("confirmPassword", "Passwords do not match.");
+                return View(userModel);
+            }
+
+            if (_dbContext.Users.Any(u => u.UserEmail == userModel.UserEmail))
+            {
+                ModelState.AddModelError(nameof(userModel.UserEmail), "Email already in use.");
+                return View(userModel);
+            }
+
+            userModel.UserPassword = Models.User.HashPassword(userModel.UserPassword);
+            userModel.UserRole = false; // regular user
+            userModel.PresentAnimals = 0;
+
+            _dbContext.Users.Add(userModel);
+            _dbContext.SaveChanges();
+
+            TempData["SuccessMessage"] = "Registration successful! Please log in.";
+            return RedirectToAction(nameof(UserLogin));
+        }
+
+        // GET: /Account/AdminLogin
+        [HttpGet]
+        public IActionResult AdminLogin()
+        {
+           return View();
+        }
+
+        // POST: /Account/AdminLogin
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult AdminLogin(string email, string password)
@@ -77,7 +121,6 @@ namespace animal_shelter_app.Controllers
             var authService = factory.CreateAuthService();
             var admin = authService.Authenticate(email, password);
 
-
             if (admin == null)
             {
                 ModelState.AddModelError("", "Invalid admin login attempt.");
@@ -85,63 +128,52 @@ namespace animal_shelter_app.Controllers
             }
 
             SetSession(admin, "Admin");
-            return RedirectToAction("AdminPage", "Account");
+            return RedirectToAction(nameof(AdminPage));
         }
 
-        // GET: Register Page
+        // GET: /Account/AdminPage
         [HttpGet]
-        public IActionResult Register() => View();
-
-        // POST: Register
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Register(User userModel, string confirmPassword)
+        public IActionResult AdminPage()
         {
-            if (!ModelState.IsValid)
-                return View("UserLogin", userModel);
+            if (HttpContext.Session.GetString("UserRole") != "Admin")
+                return RedirectToAction("AdminLogin");
 
-            if (string.IsNullOrWhiteSpace(confirmPassword) || userModel.UserPassword != confirmPassword)
+            // Create and initialize the view model
+            var viewModel = new AddAnimalViewModel
             {
-                ModelState.AddModelError("confirmPassword", "Passwords do not match.");
-                return View("UserLogin", userModel);
-            }
+                ArrivalDate = DateTime.Now,
+                HealthCheckUpDate = DateTime.Now,
+                // Initialize the species dropdown
+                SpeciesList = _dbContext.AnimalInformations
+                    .Select(t => new SelectListItem
+                    {
+                        Value = t.AnimalId.ToString(),
+                        Text = t.Species
+                    })
+                    .ToList()
+            };
 
-            if (_dbContext.Users.Any(u => u.UserEmail == userModel.UserEmail))
-            {
-                ModelState.AddModelError(nameof(userModel.UserEmail), "Email already in use.");
-                return View("UserLogin", userModel);
-            }
-
-            userModel.UserPassword = Models.User.HashPassword(userModel.UserPassword);
-            userModel.UserRole = false;
-            userModel.PresentAnimals = 0;
-            _dbContext.Users.Add(userModel);
-            _dbContext.SaveChanges();
-
-            TempData["SuccessMessage"] = "Registration successful! Please log in.";
-            return RedirectToAction(nameof(UserLogin));
+            return View(viewModel);
         }
 
-        // Logout
+        // GET: /Account/Logout
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();
-            return RedirectToAction("UserLogin");
+            return RedirectToAction(nameof(UserLogin));
         }
 
-        // GET: Edit Profile
+        // GET: /Account/EditProfile
         [HttpGet]
         public IActionResult EditProfile()
         {
             var userId = HttpContext.Session.GetInt32("UserId");
-            if (!userId.HasValue)
-                return RedirectToAction("UserLogin");
+            if (!userId.HasValue) return RedirectToAction(nameof(UserLogin));
 
             var user = _dbContext.Users.Find(userId.Value);
-            if (user == null)
-                return RedirectToAction("UserLogin");
+            if (user == null) return RedirectToAction(nameof(UserLogin));
 
-            var viewModel = new EditProfileViewModel
+            var vm = new EditProfileViewModel
             {
                 UserId = user.UserId,
                 UserName = user.UserName,
@@ -150,21 +182,20 @@ namespace animal_shelter_app.Controllers
                 PresentAnimals = user.PresentAnimals
             };
 
-            return View(viewModel);
+            // will look for Views/Account/User/EditProfile.cshtml
+            return View(vm);
         }
 
-        // POST: Edit Profile
+        // POST: /Account/EditProfile
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult EditProfile(EditProfileViewModel model)
         {
             var userId = HttpContext.Session.GetInt32("UserId");
-            if (!userId.HasValue)
-                return RedirectToAction("UserLogin");
+            if (!userId.HasValue) return RedirectToAction(nameof(UserLogin));
 
             var existingUser = _dbContext.Users.Find(userId.Value);
-            if (existingUser == null)
-                return RedirectToAction("UserLogin");
+            if (existingUser == null) return RedirectToAction(nameof(UserLogin));
 
             if (!ModelState.IsValid)
                 return View(model);
@@ -178,25 +209,26 @@ namespace animal_shelter_app.Controllers
                 existingUser.UserPassword = Models.User.HashPassword(model.NewPassword);
 
             _dbContext.SaveChanges();
-            return RedirectToAction("UserPage");
+            return RedirectToAction(nameof(UserPage));
         }
 
-        // Helper: Set Session Data
-        private void SetSession(User user, string role)
-        {
-            HttpContext.Session.SetInt32("UserId", user.UserId);
-            HttpContext.Session.SetString("UserName", user.UserName);
-            HttpContext.Session.SetString("UserRole", role);
-        }
-
-        // User Page
+        // GET: /Account/UserPage
+        [HttpGet]
         public IActionResult UserPage()
         {
-            var role = HttpContext.Session.GetString("UserRole");
-            if (role != "User")
-                return RedirectToAction("UserLogin");
+            if (HttpContext.Session.GetString("UserRole") != "User")
+                return RedirectToAction(nameof(UserLogin));
 
+            // Views/Account/User/UserPage.cshtml
             return View();
+        }
+
+        // ---  Session helpers ---
+        private void SetSession(User u, string role)
+        {
+            HttpContext.Session.SetInt32("UserId", u.UserId);
+            HttpContext.Session.SetString("UserName", u.UserName);
+            HttpContext.Session.SetString("UserRole", role);
         }
     }
 }

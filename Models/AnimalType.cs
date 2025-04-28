@@ -8,6 +8,7 @@ namespace animal_shelter_app.Models
     {
         [Key]
         [Column("animal_special_type_id")]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)] //To block auto generation to manually set the value
         public long AnimalSpecialTypeId { get; set; }
 
         [Column("animal_id")]

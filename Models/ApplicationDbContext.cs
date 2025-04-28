@@ -32,8 +32,10 @@ namespace animal_shelter_app.Models
                 .HasForeignKey<AnimalHealthCondition>(a => a.AnimalId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-
-
+            modelBuilder.Entity<AnimalInformation>()
+                .HasOne(ai => ai.AnimalType)
+                .WithOne(at => at.AnimalInformation)
+                .HasForeignKey<AnimalType>(at => at.AnimalId);
         }
     }
 }

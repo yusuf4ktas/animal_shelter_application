@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace animal_shelter_app.Models
+namespace animal_shelter_app.Models.ViewModels
 {
     public class EditProfileViewModel
     {

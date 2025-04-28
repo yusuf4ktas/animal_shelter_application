@@ -19,14 +19,12 @@ namespace animal_shelter_app.Models
         [Column("disability_status")]
         public bool DisabilityStatus { get; set; }
 
-        // New property to store disability details text
         [Column("disability_details")]
         public string? DisabilityDetails { get; set; }
 
         [Column("chronic_diseasae_status")]
         public bool ChronicDiseaseStatus { get; set; }
 
-        // New property to store disability details text
         [Column("chronic_disease_details")]
         public string? ChronicDiseaseDetails { get; set; }
 

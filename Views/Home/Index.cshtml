@@ -113,9 +113,9 @@
                 <div class="col-md-9">
                     <h5>Animal ID: @animal.AnimalId</h5>
                     <p><strong>Species:</strong> @animal.Species</p>
-                    @if (!string.IsNullOrEmpty(animal.AnimalSpecies?.AnimalSpecies))
+                    @if (!string.IsNullOrEmpty(animal.AnimalType?.AnimalSpecies))
                     {
-                        <p><strong>Specific Species:</strong> @animal.AnimalSpecies</p>
+                        <p><strong>Specific Species:</strong> @animal.AnimalType</p>
                     }
                     <p><strong>Age:</strong> @animal.AnimalAge</p>
                     <p><strong>Gender:</strong> @(animal.AnimalGender ? "Female" : "Male")</p>

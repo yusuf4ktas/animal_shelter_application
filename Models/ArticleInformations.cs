@@ -10,7 +10,7 @@ namespace animal_shelter_app.Models
     public class ArticleInformations
     {
         [Key]
-        [Column("article_id")] //Have been added to match the id of any added texts. Restore the DLL accordingly.
+        [Column("article_id")] 
         public int ArticleId { get; set; }
 
         [Column("blog_title")]

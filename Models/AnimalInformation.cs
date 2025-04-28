@@ -37,8 +37,8 @@ namespace animal_shelter_app.Models
         [Column("isAdopted")]
         public bool IsAdopted { get; set; } = false;
 
+        public AnimalType? AnimalType { get; set; }
         public AnimalHealthCondition? HealthCondition { get; set; }
-        public AnimalType? AnimalSpecies { get; set; }
 
     }
 }
