@@ -1,6 +1,7 @@
 using animal_shelter_app.Models;
 using Microsoft.EntityFrameworkCore;
 using DotNetEnv;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -38,6 +39,13 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
+
+
+////////////////////////////////////////////////////////////
+//
+
+
+////////////////////////////////////////////////////////////
 
 
 
@@ -79,6 +87,7 @@ app.UseRouting();
 
 // Enable session before authorization
 app.UseSession();
+app.UseAuthentication();  
 app.UseAuthorization();
 
 //Default route

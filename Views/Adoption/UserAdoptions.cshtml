@@ -1,0 +1,95 @@
+﻿@model IEnumerable<animal_shelter_app.Models.Adoption>
+
+@{
+    ViewData["Title"] = "My Applications";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
+
+@if (Model != null && Model.Any())
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Animal</th>
+                <th>Appointment Date</th>
+                <th>Adres</th>
+                <th>Status</th>
+                <th>Admin Note</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var adoption in Model)
+            {
+                <tr>
+                    <td>
+                        @if (adoption.AnimalInformation != null)
+                        {
+                            <a href="@Url.Action("SpecificAnimal", "Animal", new { id = adoption.AnimalId })">
+                                @adoption.AnimalInformation.Species - @adoption.AnimalInformation.AnimalId
+                            </a>
+                        }
+                        else
+                        {
+                            <span>Animal Information Couldn't Found'</span>
+                        }
+
+                    </td>
+                    <td>@adoption.AdoptionDate</td>
+                    <td>@adoption.UserAddress</td>
+                    <td>
+                        @{
+
+                            string statusClass = "";
+                            switch (adoption.AdoptionStatus)
+                            {
+                                case "Pending":
+                                    statusClass = "badge bg-warning";
+                                    break;
+                                case "Approved":
+                                    statusClass = "badge bg-success";
+                                    break;
+                                case "Rejected":
+                                    statusClass = "badge bg-danger";
+                                    break;
+                                default:
+                                    statusClass = "badge bg-secondary";
+                                    break;
+                            }
+                        }
+                        <span class="@statusClass">@adoption.AdoptionStatus</span>
+                    </td>
+
+                    <td>
+                        
+                        @if (!string.IsNullOrEmpty(adoption.AdminNote))
+                        {
+                            <p>@adoption.AdminNote</p>
+                        }
+                        else
+                        {
+                            <span>--</span> 
+                        }
+                    </td>
+
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+else
+{
+    <p>You do not have any adoption applications yet.</p>
+}

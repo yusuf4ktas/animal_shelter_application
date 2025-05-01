@@ -5,6 +5,8 @@ using animal_shelter_app.Models;
 using animal_shelter_app.Factories;
 using animal_shelter_app.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication;
 
 namespace animal_shelter_app.Controllers
 {
@@ -29,6 +31,7 @@ namespace animal_shelter_app.Controllers
             return View();
         }
 
+
         // POST: /Account/UserLogin
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -50,9 +53,20 @@ namespace animal_shelter_app.Controllers
                 return View();
             }
 
+            HttpContext.Session.SetString("UserName", user.UserName);
+            HttpContext.Session.SetString("UserRole", user.UserRole.ToString().ToLower()); // "true" veya "false"
+
             SetSession(user, "User");
+
+
+
+
             return RedirectToAction(nameof(UserPage));
         }
+
+        
+
+
 
         // GET: /Account/Register
         [HttpGet]
@@ -103,7 +117,7 @@ namespace animal_shelter_app.Controllers
         [HttpGet]
         public IActionResult AdminLogin()
         {
-           return View();
+            return View();
         }
 
         // POST: /Account/AdminLogin
@@ -138,6 +152,24 @@ namespace animal_shelter_app.Controllers
             if (HttpContext.Session.GetString("UserRole") != "Admin")
                 return RedirectToAction("AdminLogin");
 
+            
+            // adoptions panel for admin
+            var pendingAdoptions = _dbContext.Adoptions
+       .Where(a => a.AdoptionStatus == "Pending")
+       .Select(a => new
+       {
+           AdoptionId = a.AdoptionId,
+           UserId = a.UserId,
+           AnimalId = a.AnimalId,
+           Date = a.AdoptionDate,
+           Address = a.UserAddress,
+           UserName = a.User.UserName,
+           PresentAnimals = a.User.PresentAnimals
+       }).ToList();
+
+            ViewBag.PendingAdoptions = pendingAdoptions;
+
+
             // Create and initialize the view model
             var viewModel = new AddAnimalViewModel
             {
@@ -155,6 +187,8 @@ namespace animal_shelter_app.Controllers
 
             return View(viewModel);
         }
+
+       
 
         // GET: /Account/Logout
         public IActionResult Logout()
@@ -211,6 +245,7 @@ namespace animal_shelter_app.Controllers
             _dbContext.SaveChanges();
             return RedirectToAction(nameof(UserPage));
         }
+
 
         // GET: /Account/UserPage
         [HttpGet]

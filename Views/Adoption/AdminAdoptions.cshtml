@@ -1,0 +1,118 @@
+﻿@model IEnumerable<animal_shelter_app.Models.Adoption>
+
+@{
+    ViewData["Title"] = "Pending Applications";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Animal ID</th>
+            <th>User ID</th>
+            <th>Status</th>
+            <th>Admin Note</th>
+            <th>Status</th> 
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var adoption in Model)
+        {
+            <tr>
+                <td>@adoption.AnimalInformation?.AnimalId</td>
+                <td>@adoption.User?.UserName</td>
+                <td>@adoption.AdoptionStatus</td>
+                <td>
+
+                    @if (adoption.AdoptionStatus == "Pending") // Sadece bekleyenler için yorum kutusu gösterir
+                    {
+                        <textarea name="adminNoteTextarea" 
+                                  class="admin-note-textarea form-control" @* JS ve Bootstrap stili için class *@
+                                  rows="2" cols="30"
+                                  placeholder="Admin Notu (Opsiyonel)"
+                                  id="adminNote_@adoption.AdoptionId">@* Satıra özel ID *@
+                                </textarea>
+                    }
+                    else // Onaylandı/Reddedildi ise bırakılan notu gösterir
+                    {
+                        @if (!string.IsNullOrEmpty(adoption.AdminNote))
+                        {
+                            <p>@adoption.AdminNote</p>
+                        }
+                        else
+                        {
+                            <span>--</span> 
+                        }
+                    }
+                </td>
+                <td>
+
+                    @if (adoption.AdoptionStatus == "Pending") 
+                    {
+
+                        <form asp-action="ApproveAdoption" asp-controller="Adoption" method="post" class="adoption-action-form" style="display:inline-block; margin-right: 5px;">
+                            <input type="hidden" name="adoptionId" value="@adoption.AdoptionId" />
+                            @* adminNote hidden inputu JS tarafından eklenecek *@
+                            <button type="submit" class="btn btn-success btn-sm">Onayla</button>
+                        </form>
+
+                   
+                        <form asp-action="RejectAdoption" asp-controller="Adoption" method="post" class="adoption-action-form" style="display:inline-block;">
+                            <input type="hidden" name="adoptionId" value="@adoption.AdoptionId" />
+                            @* adminNote hidden inputu JS tarafından eklenecek *@
+                            <button type="submit" class="btn btn-danger btn-sm">Reddet</button>
+                        </form>
+                    }
+                    
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+
+
+
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // selects all events in list
+            
+            const adoptionForms = document.querySelectorAll('table .adoption-action-form');
+
+            adoptionForms.forEach(form => {
+                form.addEventListener('submit', function (event) {
+                    // Finds the row (<tr>) containing the form
+                    const row = form.closest('tr');
+
+                    if (row) {
+                       // Finds comment box on the same line (by class or id)
+                        const adminNoteTextarea = row.querySelector('.admin-note-textarea'); // class ile buluyoruz
+
+                        if (adminNoteTextarea) {
+                            const noteValue = adminNoteTextarea.value;
+
+                            
+                            if (noteValue.trim() !== '') {
+                                
+                                const hiddenInput = document.createElement('input');
+                                hiddenInput.type = 'hidden';
+                                hiddenInput.name = 'adminNote'; 
+                                hiddenInput.value = noteValue;
+
+                             
+                                form.appendChild(hiddenInput);
+                            }
+                           
+                        }
+                    }
+                  
+                });
+            });
+        });
+    </script>
+}
+

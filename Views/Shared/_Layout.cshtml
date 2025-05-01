@@ -35,7 +35,7 @@
         <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
 
-                <!-- Three-dot button to open the filter offcanvas -->
+              
                 <button class="btn btn-link me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#filterDrawer" aria-label="Filter">
                     <i class="bi bi-list fs-4"></i>
                 </button>
@@ -57,9 +57,36 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="ExploreAnimals">Explore Animals</a>
                         </li>
+  
+
+                        @*routes user and admin to UserAdoptions and AdminAdoptions pages*@
+
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="AdoptionProcess">Adoption Process</a>
+
+                            @{
+                             
+                                var userRole = Context.Session.GetString("UserRole");
+                            }
+
+                            @if (!string.IsNullOrEmpty(userRole))
+                            {
+                              
+                            @if (userRole == "Admin")
+                                {
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Adoption" asp-action="AdminAdoptions">Adoption Process</a>
+                                }
+                               
+                            else if (userRole == "User")
+                                {
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Adoption" asp-action="UserAdoptions">Adoption Process</a>
+                                }
+              
+                            }
+      
+
                         </li>
+
+
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="ScheduleAVisit">Schedule a Visit</a>
                         </li>

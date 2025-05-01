@@ -29,164 +29,164 @@
         <div class="card-body">
 
             <!-- Tabs -->
-            <ul class="nav nav-tabs mb-3" id="animalTabs" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link active" data-bs-toggle="tab"
-                            data-bs-target="#tab-general" type="button" role="tab">
-                        General info
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" data-bs-toggle="tab"
-                            data-bs-target="#tab-health" type="button" role="tab">
-                        Health
-                    </button>
-                </li>
-            </ul>
+    <ul class="nav nav-tabs mb-3" id="animalTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" data-bs-toggle="tab"
+                    data-bs-target="#tab-general" type="button" role="tab">
+                General info
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" data-bs-toggle="tab"
+                    data-bs-target="#tab-health" type="button" role="tab">
+                Health
+            </button>
+        </li>
+    </ul>
 
-            <form asp-controller="Admin" asp-action="AddAnimal"
-                  enctype="multipart/form-data" class="needs-validation" novalidate>
+    <form asp-controller="Admin" asp-action="AddAnimal"
+          enctype="multipart/form-data" class="needs-validation" novalidate>
 
-                <div class="tab-content">
-                    <!-- ::::::::::::::::: GENERAL INFORMATION TAB ::::::::::::::::: -->
-                    <div class="tab-pane fade show active" id="tab-general" role="tabpanel">
-                        <div class="row g-3">
+        <div class="tab-content">
+            <!-- ::::::::::::::::: GENERAL INFORMATION TAB ::::::::::::::::: -->
+            <div class="tab-pane fade show active" id="tab-general" role="tabpanel">
+                <div class="row g-3">
 
-                            <div class="col-lg-4">
-                                <label asp-for="AnimalAge" class="form-label">Age</label>
-                                <input asp-for="AnimalAge" class="form-control" required>
-                                <div class="invalid-feedback">Age is required.</div>
-                            </div>
+                    <div class="col-lg-4">
+                        <label asp-for="AnimalAge" class="form-label">Age</label>
+                        <input asp-for="AnimalAge" class="form-control" required>
+                        <div class="invalid-feedback">Age is required.</div>
+                    </div>
 
-                            <div class="col-lg-4">
-                                <label asp-for="AnimalGender" class="form-label">Gender</label>
-                                <select asp-for="AnimalGender" class="form-select">
-                                    <option value="false">Male</option>
-                                    <option value="true">Female</option>
-                                </select>
-                            </div>
+                    <div class="col-lg-4">
+                        <label asp-for="AnimalGender" class="form-label">Gender</label>
+                        <select asp-for="AnimalGender" class="form-select">
+                            <option value="false">Male</option>
+                            <option value="true">Female</option>
+                        </select>
+                    </div>
 
-                            <div class="col-lg-4">
-                                <label asp-for="NeuteringStatus" class="form-label">Neutered?</label>
-                                <select asp-for="NeuteringStatus" class="form-select">
-                                    <option value="false">No</option>
-                                    <option value="true">Yes</option>
-                                </select>
-                            </div>
+                    <div class="col-lg-4">
+                        <label asp-for="NeuteringStatus" class="form-label">Neutered?</label>
+                        <select asp-for="NeuteringStatus" class="form-select">
+                            <option value="false">No</option>
+                            <option value="true">Yes</option>
+                        </select>
+                    </div>
 
-                             <!-- For making sure to see each breed's value uniquely -->
-                            <div class="col-lg-6">
-                                <label asp-for="Species" class="form-label">Species</label>
-                                <select asp-for="Species" class="form-select" required>
-                                    <option value="">— choose species —</option>
+                    <!-- For making sure to see each breed's value uniquely -->
+                    <div class="col-lg-6">
+                        <label asp-for="Species" class="form-label">Species</label>
+                        <select asp-for="Species" class="form-select" required>
+                            <option value="">— choose species —</option>
                                     @foreach (var s in Model.SpeciesList
-                                    .Select(o => o.Text.Trim())
-                                    .Distinct(StringComparer.OrdinalIgnoreCase)
-                                    .OrderBy(s => s))
+                            .Select(o => o.Text.Trim())
+                            .Distinct(StringComparer.OrdinalIgnoreCase)
+                            .OrderBy(s => s))
                                     {
-                                        <option value="@s">@s</option>
+                                <option value="@s">@s</option>
                                     }
-                                </select>
-                                <div class="invalid-feedback">Please pick a species.</div>
-                            </div>
-
-                            <div class="col-lg-6">
-                                <label asp-for="AnimalSpecies" class="form-label">Breed / type</label>
-                                <input asp-for="AnimalSpecies" class="form-control" placeholder="e.g. Labrador Retriever">
-                            </div>
-
-                            <div class="col-lg-4">
-                                <label asp-for="LifeExpectancy" class="form-label">Life expectancy (yrs)</label>
-                                <input asp-for="LifeExpectancy" class="form-control">
-                            </div>
-
-                            <div class="col-lg-4">
-                                <label asp-for="ArrivalDate" class="form-label">Arrival date</label>
-                                <input asp-for="ArrivalDate" type="date" class="form-control">
-                            </div>
-
-                            <div class="col-lg-4">
-                                <label asp-for="IsAdopted" class="form-label">Already adopted?</label>
-                                <select asp-for="IsAdopted" class="form-select">
-                                    <option value="false">No</option>
-                                    <option value="true">Yes</option>
-                                </select>
-                            </div>
-
-                            <div class="col-12">
-                                <label asp-for="CharacteristicFeatures" class="form-label">Characteristics</label>
-                                <textarea asp-for="CharacteristicFeatures" class="form-control" rows="2"></textarea>
-                            </div>
-
-                            <div class="col-12">
-                                <label asp-for="PastInformation" class="form-label">Past information</label>
-                                <textarea asp-for="PastInformation" class="form-control" rows="2"></textarea>
-                            </div>
-
-                            <div class="col-12">
-                                <label asp-for="ImageFile" class="form-label">Picture</label>
-                                <input asp-for="ImageFile" type="file" class="form-control" accept="image/*" onchange="preview(this)">
-                                <img id="thumb" class="rounded mt-2 d-none" style="max-width:120px;">
-                            </div>
-
-                            <!-- call-out to the next tab for full info addition-->
-                            <div class="alert alert-info mt-4 mb-0 d-flex align-items-center">
-                                <i class="bi bi-info-circle me-2"></i>
-                                <span>
-                                    Please switch to the <strong>Health</strong> tab and fill in the
-                                    remaining details before saving.
-                                </span>
-                            </div>
-
-                        </div>
+                        </select>
+                        <div class="invalid-feedback">Please pick a species.</div>
                     </div>
 
-                    <!-- ::::::::::::::::: HEALTH INFORMATION TAB ::::::::::::::::: -->
-                    <div class="tab-pane fade" id="tab-health" role="tabpanel">
-                        <div class="row g-3">
-
-                            <div class="col-lg-6">
-                                <label asp-for="HealthCheckUpDate" class="form-label">Check-up date</label>
-                                <input asp-for="HealthCheckUpDate" type="date" class="form-control">
-                            </div>
-
-                            <div class="col-lg-6">
-                                <label asp-for="DisabilityStatus" class="form-label">Disability?</label>
-                                <select asp-for="DisabilityStatus" class="form-select">
-                                    <option value="false">No</option>
-                                    <option value="true">Yes</option>
-                                </select>
-                            </div>
-
-                            <div class="col-12">
-                                <label asp-for="DisabilityDetails" class="form-label">Disability details</label>
-                                <textarea asp-for="DisabilityDetails" class="form-control" rows="2"></textarea>
-                            </div>
-
-                            <div class="col-lg-6">
-                                <label asp-for="ChronicDiseaseStatus" class="form-label">Chronic disease?</label>
-                                <select asp-for="ChronicDiseaseStatus" class="form-select">
-                                    <option value="false">No</option>
-                                    <option value="true">Yes</option>
-                                </select>
-                            </div>
-
-                            <div class="col-12">
-                                <label asp-for="ChronicDiseaseDetails" class="form-label">Chronic disease details</label>
-                                <textarea asp-for="ChronicDiseaseDetails" class="form-control" rows="2"></textarea>
-                            </div>
-
-                             <!-- Button only appears on health information tab to avoid missing value entries -->
-                            <div class="text-end mt-4">
-                                <button type="submit" class="btn btn-success">
-                                    <i class="bi bi-save me-1"></i> Save animal
-                                </button>
-                            </div>
-                        </div><!-- /row -->
+                    <div class="col-lg-6">
+                        <label asp-for="AnimalSpecies" class="form-label">Breed / type</label>
+                        <input asp-for="AnimalSpecies" class="form-control" placeholder="e.g. Labrador Retriever">
                     </div>
-                </div><!-- /tab-content -->
-            </form>
-        </div><!-- /card-body -->
+
+                    <div class="col-lg-4">
+                        <label asp-for="LifeExpectancy" class="form-label">Life expectancy (yrs)</label>
+                        <input asp-for="LifeExpectancy" class="form-control">
+                    </div>
+
+                    <div class="col-lg-4">
+                        <label asp-for="ArrivalDate" class="form-label">Arrival date</label>
+                        <input asp-for="ArrivalDate" type="date" class="form-control">
+                    </div>
+
+                    <div class="col-lg-4">
+                        <label asp-for="IsAdopted" class="form-label">Already adopted?</label>
+                        <select asp-for="IsAdopted" class="form-select">
+                            <option value="false">No</option>
+                            <option value="true">Yes</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12">
+                        <label asp-for="CharacteristicFeatures" class="form-label">Characteristics</label>
+                        <textarea asp-for="CharacteristicFeatures" class="form-control" rows="2"></textarea>
+                    </div>
+
+                    <div class="col-12">
+                        <label asp-for="PastInformation" class="form-label">Past information</label>
+                        <textarea asp-for="PastInformation" class="form-control" rows="2"></textarea>
+                    </div>
+
+                    <div class="col-12">
+                        <label asp-for="ImageFile" class="form-label">Picture</label>
+                        <input asp-for="ImageFile" type="file" class="form-control" accept="image/*" onchange="preview(this)">
+                        <img id="thumb" class="rounded mt-2 d-none" style="max-width:120px;">
+                    </div>
+
+                    <!-- call-out to the next tab for full info addition-->
+                    <div class="alert alert-info mt-4 mb-0 d-flex align-items-center">
+                        <i class="bi bi-info-circle me-2"></i>
+                        <span>
+                            Please switch to the <strong>Health</strong> tab and fill in the
+                            remaining details before saving.
+                        </span>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ::::::::::::::::: HEALTH INFORMATION TAB ::::::::::::::::: -->
+            <div class="tab-pane fade" id="tab-health" role="tabpanel">
+                <div class="row g-3">
+
+                    <div class="col-lg-6">
+                        <label asp-for="HealthCheckUpDate" class="form-label">Check-up date</label>
+                        <input asp-for="HealthCheckUpDate" type="date" class="form-control">
+                    </div>
+
+                    <div class="col-lg-6">
+                        <label asp-for="DisabilityStatus" class="form-label">Disability?</label>
+                        <select asp-for="DisabilityStatus" class="form-select">
+                            <option value="false">No</option>
+                            <option value="true">Yes</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12">
+                        <label asp-for="DisabilityDetails" class="form-label">Disability details</label>
+                        <textarea asp-for="DisabilityDetails" class="form-control" rows="2"></textarea>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <label asp-for="ChronicDiseaseStatus" class="form-label">Chronic disease?</label>
+                        <select asp-for="ChronicDiseaseStatus" class="form-select">
+                            <option value="false">No</option>
+                            <option value="true">Yes</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12">
+                        <label asp-for="ChronicDiseaseDetails" class="form-label">Chronic disease details</label>
+                        <textarea asp-for="ChronicDiseaseDetails" class="form-control" rows="2"></textarea>
+                    </div>
+
+                    <!-- Button only appears on health information tab to avoid missing value entries -->
+                    <div class="text-end mt-4">
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-save me-1"></i> Save animal
+                        </button>
+                    </div>
+                </div><!-- /row -->
+            </div>
+        </div><!-- /tab-content -->
+    </form>
+</div><!-- /card-body -->
     </div><!-- /card -->
 </div>
 

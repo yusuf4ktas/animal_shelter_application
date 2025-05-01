@@ -23,11 +23,22 @@ namespace animal_shelter_app.Models
         [StringLength(150)]
         public string? UserAddress { get; set; }
 
+        [Column("adoption_status")]
+        public string AdoptionStatus { get; set; } = "Pending";
+
+        [Column("admin_note")]
+        public string? AdminNote { get; set; }
+
+
         [ForeignKey("UserId")]
         public User? User { get; set; }
 
         //Navigation properties 
         [ForeignKey("AnimalId")]
         public AnimalInformation? AnimalInformation { get; set; }
+
+
+
+
     }
 }

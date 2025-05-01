@@ -19,6 +19,10 @@ namespace animal_shelter_app.Models
         public DbSet<AnimalType> AnimalTypes { get; set; }
         public DbSet<Adoption> Adoptions { get; set; }
         public DbSet<ArticleInformations> ArticleInformations { get; set; }
+        
+
+   
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
