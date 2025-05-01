@@ -1,12 +1,116 @@
-﻿@model IEnumerable<animal_shelter_app.Models.Adoption>
-
-
+﻿@model animal_shelter_app.Models.ViewModels.UserDashboardViewModel
 @{
-    ViewData["Title"] = "User Page";
+    ViewData["Title"] = "User page";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container">
-    <h2 class="mt-4">Welcome, User!</h2>
-    <p>You have successfully logged in as a normal user.</p>
+<div class="container-lg mt-4 bg-light p-4 rounded shadow-sm">
+    <h2 class="mb-4 fw-semibold text-primary">Hello, @Context.Session.GetString("UserName")!</h2>
 
+    <div id="mainCarousel" class="carousel slide shadow-sm mb-5 rounded">
+        <div class="carousel-indicators">
+            @for (var i = 0; i < Model.SliderUrls.Count; i++)
+            {
+                <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="@i"
+                        class="@(i==0?"active":"")" aria-current="@(i==0)" aria-label="Slide @(i+1)"></button>
+            }
+        </div>
+
+        <!--Slider for images on top-->
+        <div class="carousel-inner rounded">
+            @for (var i = 0; i < Model.SliderUrls.Count; i++)
+            {
+                <div class="carousel-item @(i==0?"active":"")">
+                    <img src="@Model.SliderUrls[i]" class="d-block w-100" style="object-fit:contain; height:520px;">
+                </div>
+            }
+        </div>
+
+        <button class="carousel-control-prev" type="button" data-bs-target="#mainCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon bg-dark rounded-circle" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#mainCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon bg-dark rounded-circle" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+
+   <!--Article Informations as card views-->
+    <h3 class="mb-3 text-primary">Latest articles</h3>
+
+    @if (!Model.Articles.Any())
+    {
+        <p class="text-muted">No articles have been published yet.</p>
+    }
+    else
+    {
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            @foreach (var a in Model.Articles)
+            {
+                <div class="col">
+                    <div class="card h-100 shadow-sm border-0">
+                        <div class="card-body">
+                            <h5 class="card-title fw-semibold text-info">@a.BlogTitle</h5>
+                            <p class="card-text article-content-short text-secondary">@a.BlogContent</p>
+                            <p class="card-text article-content-full d-none text-secondary">@a.BlogContent</p>
+                        </div>
+                        <div class="card-footer bg-white border-top pt-3 d-flex justify-content-between align-items-center">
+                            <small class="text-muted"><i class="bi bi-calendar-event me-1"></i> @DateTime.Parse(a.BlogDate).ToString("yyyy-MM-dd")</small>
+                            <div>
+                                @if (!string.IsNullOrWhiteSpace(a.BlogUrl))
+                                {
+                                    <a href="@a.BlogUrl" target="_blank" class="btn btn-sm btn-primary">
+                                        Read&nbsp;<i class="bi bi-box-arrow-up-right"></i>
+                                    </a>
+                                }
+                                <button class="btn btn-sm btn-outline-secondary ms-2 article-toggle-btn">
+                                    More&nbsp;<i class="bi bi-chevron-down"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
 </div>
+
+@section Scripts {
+    <script>
+        // autoplay every 5 seconds
+        const carousel = document.querySelector('#mainCarousel');
+        if (carousel) new bootstrap.Carousel(carousel, { interval: 5000, pause: 'hover' });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const articleCards = document.querySelectorAll('.card');
+            articleCards.forEach(card => {
+                const shortContent = card.querySelector('.article-content-short');
+                const fullContent = card.querySelector('.article-content-full');
+                const toggleButton = card.querySelector('.article-toggle-btn');
+                const readButton = card.querySelector('.btn-primary'); // Changed to primary
+
+                if (shortContent && fullContent && toggleButton) {
+                    const isTruncated = shortContent.offsetHeight < shortContent.scrollHeight;
+
+                    if (!isTruncated) {
+                        toggleButton.style.display = 'none';
+                    }
+
+                    toggleButton.addEventListener('click', function () {
+                        shortContent.classList.toggle('d-none');
+                        fullContent.classList.toggle('d-none');
+                        const isExpanded = !shortContent.classList.contains('d-none');
+                        toggleButton.innerHTML = isExpanded ? 'Less&nbsp;<i class="bi bi-chevron-up"></i>' : 'More&nbsp;<i class="bi bi-chevron-down"></i>';
+                    });
+
+                    if (readButton) {
+                        readButton.addEventListener('click', function(event) {
+                            event.stopPropagation();
+                        });
+                    }
+                }
+            });
+        });
+    </script>
+}

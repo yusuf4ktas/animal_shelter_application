@@ -95,7 +95,7 @@ namespace animal_shelter_app.Controllers
             if (!userId.HasValue || userRole != "User")
             {
                 // Logged out users or non-users should not access this page
-                TempData["ErrorMessage"] = "Bu sayfaya erişim yetkiniz yok.";
+                TempData["ErrorMessage"] = "You do not have access to this page.";
                 return RedirectToAction("UserLogin", "Account"); 
             }
 
@@ -146,7 +146,7 @@ namespace animal_shelter_app.Controllers
             // Prevents reprocessing of a request that has already been processed
             if (adoption.AdoptionStatus != "Pending")
             {
-                TempData["ErrorMessage"] = "Bu sahiplendirme başvurusu zaten işlenmiş.";
+                TempData["ErrorMessage"] = "That adoption has already been processed.";
                 
                 return RedirectToAction("AdminAdoptions"); 
             }
@@ -168,7 +168,7 @@ namespace animal_shelter_app.Controllers
 
             _context.SaveChanges();
 
-            TempData["SuccessMessage"] = "Sahiplendirme başvurusu onaylandı.";
+            TempData["SuccessMessage"] = "Adoption process has been approved.";
            
             return RedirectToAction("AdminAdoptions"); 
         }
@@ -197,7 +197,7 @@ namespace animal_shelter_app.Controllers
           
             if (adoption.AdoptionStatus != "Pending")
             {
-                TempData["ErrorMessage"] = "Bu sahiplendirme başvurusu zaten işlenmiş.";
+                TempData["ErrorMessage"] = "That adoption has already been processed";
               
                 return RedirectToAction("AdminAdoptions"); 
             }
@@ -208,7 +208,7 @@ namespace animal_shelter_app.Controllers
 
             _context.SaveChanges();
 
-            TempData["SuccessMessage"] = "Sahiplendirme başvurusu reddedildi.";
+            TempData["SuccessMessage"] = "Adoption process has been rejected.";
             
             return RedirectToAction("AdminAdoptions"); 
         }

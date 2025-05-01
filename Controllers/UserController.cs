@@ -44,7 +44,7 @@ namespace animal_shelter_app.Controllers
                 // Eğer başvuru yoksa mesaj göster
                 if (adoptionRequests.Count == 0)
                 {
-                    ViewData["Message"] = "Henüz hiçbir sahiplenme başvurunuz yok.";
+                    ViewData["Message"] = "You have no adoption records yet";
                 }
 
                 return View(adoptionRequests);
@@ -52,7 +52,7 @@ namespace animal_shelter_app.Controllers
             else
             {
                 // Eğer kullanıcı ID'si geçerli bir integer değilse, hata mesajı göster
-                ViewData["Message"] = "Geçerli bir kullanıcı kimliği yok.";
+                ViewData["Message"] = "Invalid User ID";
                 return View();
             }
         }

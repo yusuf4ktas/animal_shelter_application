@@ -6,7 +6,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - animal_shelter</title>
+    <title>@ViewData["Title"] - PawfectMatch</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/trial.styles.css" asp-append-version="true" />
@@ -35,13 +35,10 @@
         <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
 
-              
                 <button class="btn btn-link me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#filterDrawer" aria-label="Filter">
                     <i class="bi bi-list fs-4"></i>
                 </button>
 
-
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">PawfectMatch</a>
 
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
                         aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -49,43 +46,52 @@
                 </button>
 
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <!-- Main navbar links -->
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            @{
+                                var userRole = Context.Session.GetString("UserRole");
+                                var homeAction = "Index"; // Default action for all users (including non-logged in)
+                                var homeController = "Home"; // Default controller
+
+                                if (!string.IsNullOrEmpty(userRole))
+                                {
+                                    homeController = "Account"; // Change controller if logged in
+                                    if (userRole == "Admin")
+                                    {
+                                        homeAction = "AdminPage";
+                                    }
+                                    else if (userRole == "User")
+                                    {
+                                        homeAction = "UserPage";
+                                    }
+                                }
+                            }
+                            <a class="nav-link text-dark" asp-area="" asp-controller="@homeController" asp-action="@homeAction">Home</a> @*Goes into Index(UserPage,AdminPage)*@
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="ExploreAnimals">Explore Animals</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Explore Animals</a> @*Goes into Index to list animals*@
                         </li>
-  
+
 
                         @*routes user and admin to UserAdoptions and AdminAdoptions pages*@
 
                         <li class="nav-item">
-
                             @{
-                             
-                                var userRole = Context.Session.GetString("UserRole");
+                                // userRole is already defined above
                             }
 
                             @if (!string.IsNullOrEmpty(userRole))
                             {
-                              
-                            @if (userRole == "Admin")
+                                @if (userRole == "Admin")
                                 {
                                     <a class="nav-link text-dark" asp-area="" asp-controller="Adoption" asp-action="AdminAdoptions">Adoption Process</a>
                                 }
-                               
-                            else if (userRole == "User")
+                                else if (userRole == "User")
                                 {
                                     <a class="nav-link text-dark" asp-area="" asp-controller="Adoption" asp-action="UserAdoptions">Adoption Process</a>
                                 }
-              
                             }
-      
-
                         </li>
-
 
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="ScheduleAVisit">Schedule a Visit</a>
@@ -98,7 +104,6 @@
                         </li>
                     </ul>
 
-                    <!-- Right side: user or admin name -->
                     <ul class="navbar-nav ms-auto align-items-center">
                         @if (HttpContextAccessor.HttpContext.Session.GetString("UserName") != null)
                         {
@@ -126,7 +131,6 @@
         </nav>
     </header>
 
-    <!--Offcanvas for filtering animals by species -->
     <div class="offcanvas offcanvas-start" tabindex="-1" id="filterDrawer" aria-labelledby="filterDrawerLabel">
         <div class="offcanvas-header">
             <h5 id="filterDrawerLabel">Filter by Species</h5>
@@ -172,8 +176,6 @@
             </ul>
         </div>
     </div>
-    <!-- END Offcanvas -->
-
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
@@ -182,7 +184,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2025 - animal_shelter - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2025 - PawfectMatch - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
 

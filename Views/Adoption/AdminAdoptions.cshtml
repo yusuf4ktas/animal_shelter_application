@@ -54,14 +54,14 @@
                         <form asp-action="ApproveAdoption" asp-controller="Adoption" method="post" class="adoption-action-form" style="display:inline-block; margin-right: 5px;">
                             <input type="hidden" name="adoptionId" value="@adoption.AdoptionId" />
                             @* adminNote hidden inputu JS tarafından eklenecek *@
-                            <button type="submit" class="btn btn-success btn-sm">Onayla</button>
+                            <button type="submit" class="btn btn-success btn-sm">Approve</button>
                         </form>
 
                    
                         <form asp-action="RejectAdoption" asp-controller="Adoption" method="post" class="adoption-action-form" style="display:inline-block;">
                             <input type="hidden" name="adoptionId" value="@adoption.AdoptionId" />
                             @* adminNote hidden inputu JS tarafından eklenecek *@
-                            <button type="submit" class="btn btn-danger btn-sm">Reddet</button>
+                            <button type="submit" class="btn btn-danger btn-sm">Reject</button>
                         </form>
                     }
                     

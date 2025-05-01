@@ -13,6 +13,9 @@ namespace animal_shelter_app.Models
         [Column("article_id")] 
         public int ArticleId { get; set; }
 
+        [Column("blog_image")]
+        public string? BlogImage { get; set; }
+
         [Column("blog_title")]
         public string? BlogTitle { get; set; }
 

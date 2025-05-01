@@ -13,10 +13,38 @@ namespace animal_shelter_app.Controllers
     public class AccountController : Controller
     {
         private readonly ApplicationDbContext _dbContext;
+        private readonly IWebHostEnvironment _env;     // ← NEW
 
-        public AccountController(ApplicationDbContext dbContext)
+        public AccountController(ApplicationDbContext dbContext, IWebHostEnvironment env)
         {
             _dbContext = dbContext;
+            _env = env;
+        }
+        //  GET  /Account/UserPage
+        [HttpGet]
+        public IActionResult UserPage()
+        {
+            if (HttpContext.Session.GetString("UserRole") != "User")
+                return RedirectToAction(nameof(UserLogin));
+
+            var sliderDir = Path.Combine(_env.WebRootPath, "slider");
+            var sliderPaths = Directory.Exists(sliderDir)
+                ? Directory.GetFiles(sliderDir)
+                           .OrderByDescending(System.IO.File.GetCreationTime)
+                           .Select(p => "/slider/" + Path.GetFileName(p))
+                           .Take(5)
+                           .ToList()
+                : new List<string>();
+
+
+            var articles = _dbContext.ArticleInformations
+                              .OrderByDescending(a => a.ArticleId)  // newest first
+                              .Take(6)
+                              .ToList();
+
+
+            var vm = new UserDashboardViewModel(sliderPaths, articles);
+            return View("UserPage", vm);          // ↳  Views/Account/UserPage.cshtml
         }
 
         // GET: /Account/UserLogin
@@ -63,10 +91,6 @@ namespace animal_shelter_app.Controllers
 
             return RedirectToAction(nameof(UserPage));
         }
-
-        
-
-
 
         // GET: /Account/Register
         [HttpGet]
@@ -244,18 +268,6 @@ namespace animal_shelter_app.Controllers
 
             _dbContext.SaveChanges();
             return RedirectToAction(nameof(UserPage));
-        }
-
-
-        // GET: /Account/UserPage
-        [HttpGet]
-        public IActionResult UserPage()
-        {
-            if (HttpContext.Session.GetString("UserRole") != "User")
-                return RedirectToAction(nameof(UserLogin));
-
-            // Views/Account/User/UserPage.cshtml
-            return View();
         }
 
         // ---  Session helpers ---
