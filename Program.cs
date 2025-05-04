@@ -41,15 +41,6 @@ builder.Services.AddSession(options =>
 });
 
 
-////////////////////////////////////////////////////////////
-//
-
-
-////////////////////////////////////////////////////////////
-
-
-
-
 // Build the app
 var app = builder.Build();
 
@@ -87,7 +78,7 @@ app.UseRouting();
 
 // Enable session before authorization
 app.UseSession();
-app.UseAuthentication();  
+app.UseAuthentication();
 app.UseAuthorization();
 
 //Default route

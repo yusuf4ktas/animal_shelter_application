@@ -6,33 +6,92 @@
 
 <h2>@ViewData["Title"]</h2>
 
+@* Bootstrap Modal structure *@
+<div class="modal fade" id="userDetailsModal" tabindex="-1" aria-labelledby="userDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="userDetailsModalLabel">User Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                @* User details will be loaded here by JavaScript *@
+                <div id="userDetailsContent">
+                    Loading...
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <table class="table">
     <thead>
         <tr>
-            <th>Animal ID</th>
-            <th>User ID</th>
+            <th>Animal</th> 
+            <th>User</th> 
             <th>Status</th>
             <th>Admin Note</th>
-            <th>Status</th> 
+            <th>Actions</th> 
         </tr>
     </thead>
     <tbody>
         @foreach (var adoption in Model)
         {
             <tr>
-                <td>@adoption.AnimalInformation?.AnimalId</td>
-                <td>@adoption.User?.UserName</td>
-                <td>@adoption.AdoptionStatus</td>
+                <td>
+                    @if (adoption.AnimalInformation != null)
+                    {
+                        <a href="@Url.Action("SpecificAnimal", "Animal", new { id = adoption.AnimalId })">
+                            @adoption.AnimalInformation.Species - @adoption.AnimalInformation.AnimalId
+                        </a>
+                    }
+                    else
+                    {
+                        <span>Animal Info Not Available</span>
+                    }
+                </td>
+
+                <td>
+                    @* Clickable user ID *@
+                    <span class="user-details-link" style="cursor: pointer; text-decoration: underline;" data-user-id="@adoption.User?.UserId">
+                        @adoption.User?.UserName 
+                    </span>
+                </td>
+                <td>
+                    @{
+                        string statusClass = "";
+                        switch (adoption.AdoptionStatus)
+                        {
+                            case "Pending":
+                                statusClass = "badge bg-warning";
+                                break;
+                            case "Approved":
+                                statusClass = "badge bg-success";
+                                break;
+                            case "Rejected":
+                                statusClass = "badge bg-danger";
+                                break;
+                            default:
+                                statusClass = "badge bg-secondary";
+                                break;
+                        }
+                    }
+                    <span class="@statusClass">@adoption.AdoptionStatus</span>
+                </td>
                 <td>
 
-                    @if (adoption.AdoptionStatus == "Pending") // Sadece bekleyenler için yorum kutusu gösterir
+                    @if (adoption.AdoptionStatus == "Pending") 
                     {
-                        <textarea name="adminNoteTextarea" 
-                                  class="admin-note-textarea form-control" @* JS ve Bootstrap stili için class *@
+                        <textarea name="adminNoteTextarea"
+                                  class="admin-note-textarea form-control" 
                                   rows="2" cols="30"
                                   placeholder="Admin Notu (Opsiyonel)"
-                                  id="adminNote_@adoption.AdoptionId">@* Satıra özel ID *@
-                                </textarea>
+                                  id="adminNote_@adoption.AdoptionId">
+                                        </textarea>
                     }
                     else // Onaylandı/Reddedildi ise bırakılan notu gösterir
                     {
@@ -42,13 +101,13 @@
                         }
                         else
                         {
-                            <span>--</span> 
+                            <span>--</span>
                         }
                     }
                 </td>
                 <td>
 
-                    @if (adoption.AdoptionStatus == "Pending") 
+                    @if (adoption.AdoptionStatus == "Pending")
                     {
 
                         <form asp-action="ApproveAdoption" asp-controller="Adoption" method="post" class="adoption-action-form" style="display:inline-block; margin-right: 5px;">
@@ -57,14 +116,14 @@
                             <button type="submit" class="btn btn-success btn-sm">Approve</button>
                         </form>
 
-                   
+
                         <form asp-action="RejectAdoption" asp-controller="Adoption" method="post" class="adoption-action-form" style="display:inline-block;">
                             <input type="hidden" name="adoptionId" value="@adoption.AdoptionId" />
                             @* adminNote hidden inputu JS tarafından eklenecek *@
                             <button type="submit" class="btn btn-danger btn-sm">Reject</button>
                         </form>
                     }
-                    
+
                 </td>
             </tr>
         }
@@ -72,44 +131,84 @@
 </table>
 
 
-
-
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
 
 
 @section Scripts {
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // selects all events in list
             
             const adoptionForms = document.querySelectorAll('table .adoption-action-form');
 
             adoptionForms.forEach(form => {
                 form.addEventListener('submit', function (event) {
-                    // Finds the row (<tr>) containing the form
                     const row = form.closest('tr');
-
                     if (row) {
-                       // Finds comment box on the same line (by class or id)
-                        const adminNoteTextarea = row.querySelector('.admin-note-textarea'); // class ile buluyoruz
-
+                         // Finds comment box on the same line (by class or id)
+                        const adminNoteTextarea = row.querySelector('.admin-note-textarea');
                         if (adminNoteTextarea) {
                             const noteValue = adminNoteTextarea.value;
-
-                            
                             if (noteValue.trim() !== '') {
-                                
                                 const hiddenInput = document.createElement('input');
                                 hiddenInput.type = 'hidden';
                                 hiddenInput.name = 'adminNote'; 
                                 hiddenInput.value = noteValue;
-
-                             
                                 form.appendChild(hiddenInput);
                             }
-                           
                         }
                     }
-                  
+                });
+            });
+
+            // User Details
+            const userDetailLinks = document.querySelectorAll('.user-details-link');
+            const userDetailsModal = new bootstrap.Modal(document.getElementById('userDetailsModal')); 
+            const userDetailsContent = document.getElementById('userDetailsContent');
+
+            userDetailLinks.forEach(link => {
+                link.addEventListener('click', function () {
+                    const userId = this.getAttribute('data-user-id');
+
+                    // Clear previous content and show loading
+                    userDetailsContent.innerHTML = 'Loading...';
+                    userDetailsModal.show();
+
+                    // Make an AJAX call to fetch user details
+              
+              
+                    fetch(`/User/GetUserDetail?userId=${userId}`) // Adjusting the URL path for specific users
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error(`HTTP error! status: ${response.status}`);
+                            }
+                            return response.json(); 
+                        })
+                        .then(data => {
+                            // Populating the modal with fetched data
+                            if (data) {
+                                userDetailsContent.innerHTML = `
+                                    <p><strong>User ID:</strong> ${data.userId !== undefined ? data.userId : 'N/A'}</p>
+                                    <p><strong>Username:</strong> ${data.userName || 'N/A'}</p>
+                                    <p><strong>Surname:</strong> ${data.userSurname || 'N/A'}</p> 
+                                    <p><strong>Email:</strong> ${data.userEmail || 'N/A'}</p> 
+                                    <p><strong>Number of Animals Owned:</strong> ${data.numberOfAnimalsOwned !== undefined ? data.numberOfAnimalsOwned : 'N/A'}</p>
+   
+                                `;
+                            } else {
+                                userDetailsContent.innerHTML = '<p>Could not load user details.</p>';
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error fetching user details:', error);
+                            userDetailsContent.innerHTML = `<p>Error loading user details: ${error.message}</p>`;
+                        });
                 });
             });
         });
