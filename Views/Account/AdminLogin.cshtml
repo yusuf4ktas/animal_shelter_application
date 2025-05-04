@@ -172,13 +172,24 @@
         cursor: pointer;
         color: #999;
     }
+
+    .alert-danger {
+        background-color: #f8d7da;
+        color: #721c24;
+        padding: 10px;
+        border-radius: 5px;
+        margin-top: 15px;
+        width: 100%;
+        text-align: center;
+        border: 1px solid #f5c6cb;
+    }
 </style>
 
 <div class="login-container">
     <!-- Left Side: Image -->
     <div class="login-left">
         <img src="/images/admin_login.jpg" alt="Admin Login Image" />
-        <div class="slogan">“Guardians of the Voiceless – Secure Access Only.”</div>
+        <div class="slogan">"Guardians of the Voiceless – Secure Access Only."</div>
     </div>
 
     <!-- Right Side: Admin Login Form -->
@@ -196,11 +207,20 @@
                 <div class="input-group">
                     <input type="password" name="password" id="password" required placeholder=" " />
                     <label for="password">Password</label>
+                    <i class="bi bi-eye eye-toggle" onclick="togglePassword('password', this)"></i>
                 </div>
 
                 <button type="submit">Login</button>
-            </form>
 
+                @if (ViewBag.ErrorMessage != null)
+                {
+                    <div class="alert alert-danger mt-3">@ViewBag.ErrorMessage</div>
+                }
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger mt-3">@TempData["ErrorMessage"]</div>
+                }
+            </form>
 
             <!-- Return Link -->
             <a href="@Url.Action("UserLogin", "Account")" class="return-link">Log in as user</a>
@@ -208,3 +228,17 @@
     </div>
 </div>
 
+<script>
+    function togglePassword(fieldId, icon) {
+        const field = document.getElementById(fieldId);
+        if (field.type === "password") {
+            field.type = "text";
+            icon.classList.remove("bi-eye");
+            icon.classList.add("bi-eye-slash");
+        } else {
+            field.type = "password";
+            icon.classList.remove("bi-eye-slash");
+            icon.classList.add("bi-eye");
+        }
+    }
+</script>

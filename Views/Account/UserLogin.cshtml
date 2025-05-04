@@ -146,13 +146,35 @@
     .text-danger {
         font-size: 0.875rem;
     }
+
+    .alert-danger {
+        background-color: #f8d7da;
+        color: #721c24;
+        padding: 10px;
+        border-radius: 5px;
+        margin-top: 15px;
+        width: 100%;
+        text-align: center;
+        border: 1px solid #f5c6cb;
+    }
+
+    .alert-success {
+        background-color: #d4edda;
+        color: #155724;
+        padding: 10px;
+        border-radius: 5px;
+        margin-top: 15px;
+        width: 100%;
+        text-align: center;
+        border: 1px solid #c3e6cb;
+    }
 </style>
 
 
 <div class="login-container">
     <div class="login-left">
         <img src="/images/userlogin.jpg" alt="Login Image" />
-        <div class="slogan">“Behind every happy tail is a hero like you.”</div>
+        <div class="slogan">"Behind every happy tail is a hero like you."</div>
     </div>
 
     <div class="login-right">
@@ -178,12 +200,16 @@
                 </div>
 
                 <button type="submit" class="custom-btn">Login</button>
-            </form>
 
-            @if (ViewBag.ErrorMessage != null)
-            {
-                <div class="alert alert-danger mt-3">@ViewBag.ErrorMessage</div>
-            }
+                @if (ViewBag.ErrorMessage != null)
+                {
+                    <div class="alert alert-danger mt-3">@ViewBag.ErrorMessage</div>
+                }
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger mt-3">@TempData["ErrorMessage"]</div>
+                }
+            </form>
 
             <a href="@Url.Action("AdminLogin", "Account")" class="admin-login">Log in as admin</a>
         </div>
@@ -192,6 +218,24 @@
         <div id="register-form" class="form-container" style="display:none;">
             <form method="post" asp-action="Register" asp-controller="Account" onsubmit="return validatePassword()">
                 @Html.AntiForgeryToken()
+
+                @if (ViewBag.RegistrationSuccess != null)
+                {
+                    <div class="alert alert-success mb-3">@ViewBag.RegistrationSuccess</div>
+                }
+                @if (ViewBag.RegistrationError != null)
+                {
+                    <div class="alert alert-danger mb-3">@ViewBag.RegistrationError</div>
+                }
+                @if (TempData["RegistrationSuccess"] != null)
+                {
+                    <div class="alert alert-success mb-3">@TempData["RegistrationSuccess"]</div>
+                }
+                @if (TempData["RegistrationError"] != null)
+                {
+                    <div class="alert alert-danger mb-3">@TempData["RegistrationError"]</div>
+                }
+
                 <span asp-validation-summary="ModelOnly" class="text-danger mb-2"></span>
 
                 <div class="form-floating">
@@ -279,5 +323,26 @@
             errorSpan.textContent = "";
             return true;
         }
+
+        // Correctly handle login and registration errors
+        document.addEventListener("DOMContentLoaded", function() {
+            // Check specifically for registration-related messages
+            const hasRegistrationMessages =
+                document.querySelector("#register-form .alert-success") !== null ||
+                document.querySelector("#register-form .alert-danger") !== null ||
+                document.querySelectorAll("#register-form .text-danger:not(:empty)").length > 0;
+
+            // Check specifically for login-related error messages
+            const hasLoginErrors =
+                document.querySelector("#login-form .alert-danger") !== null;
+
+            // Show appropriate form based on which has messages
+            if (hasRegistrationMessages) {
+                registerTab.click();
+            } else if (hasLoginErrors) {
+                loginTab.click();
+            }
+        });
     </script>
+
 }

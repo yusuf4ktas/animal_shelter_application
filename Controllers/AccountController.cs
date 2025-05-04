@@ -67,7 +67,7 @@ namespace animal_shelter_app.Controllers
         {
             if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
             {
-                ModelState.AddModelError("", "Email and Password are required.");
+                ViewBag.ErrorMessage = "Email and Password are required.";
                 return View();
             }
 
@@ -77,7 +77,7 @@ namespace animal_shelter_app.Controllers
 
             if (user == null)
             {
-                ModelState.AddModelError("", "Invalid login attempt.");
+                ViewBag.ErrorMessage = "Invalid email or password.";
                 return View();
             }
 
@@ -85,9 +85,6 @@ namespace animal_shelter_app.Controllers
             HttpContext.Session.SetString("UserRole", user.UserRole.ToString().ToLower()); // "true" veya "false"
 
             SetSession(user, "User");
-
-
-
 
             return RedirectToAction(nameof(UserPage));
         }
@@ -110,20 +107,20 @@ namespace animal_shelter_app.Controllers
                 string.IsNullOrWhiteSpace(userModel.UserEmail) ||
                 string.IsNullOrWhiteSpace(userModel.UserPassword))
             {
-                ModelState.AddModelError("", "All fields are required.");
-                return View(userModel);
+                ViewBag.RegistrationError = "All fields are required.";
+                return View("UserLogin", userModel);
             }
 
             if (userModel.UserPassword != confirmPassword)
             {
-                ModelState.AddModelError("confirmPassword", "Passwords do not match.");
-                return View(userModel);
+                ViewBag.RegistrationError = "Passwords do not match.";
+                return View("UserLogin", userModel);
             }
 
             if (_dbContext.Users.Any(u => u.UserEmail == userModel.UserEmail))
             {
-                ModelState.AddModelError(nameof(userModel.UserEmail), "Email already in use.");
-                return View(userModel);
+                ViewBag.RegistrationError = "Email already in use.";
+                return View("UserLogin", userModel);
             }
 
             userModel.UserPassword = Models.User.HashPassword(userModel.UserPassword);
@@ -133,7 +130,7 @@ namespace animal_shelter_app.Controllers
             _dbContext.Users.Add(userModel);
             _dbContext.SaveChanges();
 
-            TempData["SuccessMessage"] = "Registration successful! Please log in.";
+            TempData["RegistrationSuccess"] = "Registration successful! Please log in.";
             return RedirectToAction(nameof(UserLogin));
         }
 
@@ -151,7 +148,7 @@ namespace animal_shelter_app.Controllers
         {
             if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
             {
-                ModelState.AddModelError("", "Email and Password are required.");
+                ViewBag.ErrorMessage = "Email and Password are required.";
                 return View();
             }
 
@@ -161,7 +158,7 @@ namespace animal_shelter_app.Controllers
 
             if (admin == null)
             {
-                ModelState.AddModelError("", "Invalid admin login attempt.");
+                ViewBag.ErrorMessage = "Invalid email or password.";
                 return View();
             }
 
@@ -176,7 +173,7 @@ namespace animal_shelter_app.Controllers
             if (HttpContext.Session.GetString("UserRole") != "Admin")
                 return RedirectToAction("AdminLogin");
 
-            
+
             // adoptions panel for admin
             var pendingAdoptions = _dbContext.Adoptions
        .Where(a => a.AdoptionStatus == "Pending")
@@ -212,7 +209,7 @@ namespace animal_shelter_app.Controllers
             return View(viewModel);
         }
 
-       
+
 
         // GET: /Account/Logout
         public IActionResult Logout()
@@ -256,7 +253,10 @@ namespace animal_shelter_app.Controllers
             if (existingUser == null) return RedirectToAction(nameof(UserLogin));
 
             if (!ModelState.IsValid)
+            {
+                ViewBag.ErrorMessage = "Please check the information and try again.";
                 return View(model);
+            }
 
             existingUser.UserName = model.UserName;
             existingUser.UserSurname = model.UserSurname;
@@ -267,6 +267,7 @@ namespace animal_shelter_app.Controllers
                 existingUser.UserPassword = Models.User.HashPassword(model.NewPassword);
 
             _dbContext.SaveChanges();
+            TempData["SuccessMessage"] = "Profile updated successfully!";
             return RedirectToAction(nameof(UserPage));
         }
 
