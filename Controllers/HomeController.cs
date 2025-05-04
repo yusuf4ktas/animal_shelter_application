@@ -89,5 +89,15 @@ namespace animal_shelter_app.Controllers
 
             return View(animals);
         }
+
+        public IActionResult AboutUs()
+        {
+            return View();
+        }
+        public IActionResult Contact()
+        {
+            return View();
+        }
+
     }
 }

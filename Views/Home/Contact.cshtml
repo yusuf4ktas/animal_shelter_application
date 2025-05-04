@@ -1,0 +1,203 @@
+﻿@{
+    ViewBag.Title = "Contact";
+}
+
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+<style>
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Arial', sans-serif;
+        overflow-x: hidden; /* Yatay kaydırmayı engellemek için */
+    }
+
+    /* Header Animasyonu - Üstten gelme */
+    @@keyframes headerAnimation {
+        from {
+            transform: translateY(-50px);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    .header {
+        background: linear-gradient(135deg, #73e3d0, #18196f);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        padding: 30px;
+        height: 350px;
+        width: 100vw;
+        box-sizing: border-box;
+        margin-left: calc(-50vw + 50%);
+        color: white;
+        text-align: center;
+        animation: headerAnimation 1s ease-out forwards; /* Animasyonu burada uyguluyoruz */
+    }
+
+        .header h1 {
+            font-size: 70px;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .header p {
+            font-size: 30px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+    /* Main Content Animasyonu - Aşağıdan gelme */
+    @@keyframes contentAnimation {
+        from {
+            transform: translateY(50px);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    .main-content {
+        display: flex;
+        margin: 0 auto;
+        max-width: 1200px;
+        background: white;
+        padding: 0;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        position: relative;
+        top: -80px;
+        border: none;
+        min-height: 500px;
+        animation: contentAnimation 1s ease-out forwards; /* Animasyonu burada uyguluyoruz */
+    }
+
+        .main-content > .left {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            align-items: stretch;
+        }
+
+    #map {
+        width: 100%;
+        height: auto;
+        min-height: 300px;
+        flex: 1;
+        border-radius: 10px;
+        margin-right: 20px;
+        margin-bottom: 20px;
+    }
+
+    .main-content > .right {
+        flex: 1;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .intro-text {
+        font-size: 1.3rem;
+        font-weight: 400; /* Kalınlığı düşürdük */
+        margin-bottom: 20px;
+        line-height: 1.6;
+        color: #333333; /* Daha koyu bir gri, göz yormaz */
+    }
+
+    .contact-info {
+        font-size: 1.1rem; /* Font boyutunu biraz büyüttük */
+        color: #555555; /* Daha yumuşak gri */
+        font-weight: 400; /* Aynı kalınlık */
+        line-height: 1.7; /* Daha açık bir satır yüksekliği */
+        margin-bottom: 25px; /* Alt boşluğu arttırarak daha ferah bir görünüm */
+    }
+
+    .contact-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        font-size: 1.1rem; /* Font büyüklüğünü uyumlu hale getirdik */
+        color: #555555; /* Aynı yumuşak gri tonu */
+    }
+
+        .contact-list li {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+            font-weight: 400; /* Hafif bir yazı kalınlığı */
+        }
+
+            .contact-list li i {
+                font-size: 1.4rem; /* İkon boyutunu biraz büyüttük */
+                color: #18196f; /* Headerdaki lacivert tonu */
+                margin-right: 15px;
+                min-width: 24px;
+                text-align: center;
+            }
+
+            .contact-list li span {
+                display: inline-block;
+                line-height: 1.6; /* Daha uyumlu bir satır yüksekliği */
+            }
+
+</style>
+
+<!-- HEADER -->
+<div class="header">
+    <h1>Get in Touch</h1>
+    <p>We’d love to hear from you.</p>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main-content container mt-4">
+    <!-- LEFT: MAP -->
+    <div class="left">
+        <div id="map"></div>
+    </div>
+
+    <!-- RIGHT: CONTACT INFO -->
+    <div class="right">
+        <div class="contact-info">
+            <!-- Estetik metin -->
+            <p class="intro-text">
+                We are dedicated to providing care and shelter for animals in need. If you have any questions or would like to learn more about adopting, fostering, or supporting our shelter, please don’t hesitate to contact us.
+            </p>
+            <ul class="contact-list">
+                <li><i class="bi bi-geo-alt-fill"></i><span>Address: Lodge Farm Cottage, Furnace Ln, Lamberhurst, Tunbridge Wells TN3 8LE, United Kingdom</span></li>
+                <li><i class="bi bi-telephone-fill"></i><span>Phone: +90 212 123 45 67</span></li>
+                <li><i class="bi bi-envelope-fill"></i><span>E-mail: info@example.com</span></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var map = L.map('map').setView([51.085724348471565, 0.3581029927423171], 16);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        var marker = L.marker([51.085724348471565, 0.3581029927423171]).addTo(map);
+
+        marker.bindPopup('<a href="https://www.google.com/maps?q=51.08470542577847,0.3733051737448518" target="_blank" style="text-decoration: none; color: #007bff;">Pawfect Match Animal Shelter</a>');
+    });
+</script>

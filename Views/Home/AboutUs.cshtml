@@ -1,0 +1,184 @@
+﻿@{
+    ViewBag.Title = "About Us";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .hero {
+        background: url('/images/about_us_header.jpg') no-repeat center;
+        background-size: cover; /* Yatay ve dikeyde tam alanı kapsa */
+        background-position: center 20%; /* Görseli biraz daha yukarı kaydırır */
+        height: 320px;
+        width: 100vw; /* Görselin tam ekran genişliğinde görünmesi için */
+        position: relative;
+        display: flex;
+        justify-content: flex-start; /* Yazıyı sola yasladık */
+        align-items: center;
+        padding-left: 150px; /* Yazıyı biraz içeri aldık */
+        color: white;
+        box-sizing: border-box; /* padding genişliği etkilemesin */
+        overflow: hidden;
+        margin-left: calc(-50vw + 50%); /* Sayfa hizasına göre görseli ortala */
+    }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        .hero h1 {
+            position: relative;
+            font-size: 70px;
+            font-weight: 700;
+            z-index: 1;
+            color: rgba(255, 255, 255, 0.7); /* Daha fazla transparan beyaz */
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.4); /* Hafif gölge, okunabilirlik için */
+            transition: 0.3s ease;
+            opacity: 0;
+            transform: translateY(-50px); /* Başlangıçta biraz yukarıda */
+        }
+
+            .hero h1.visible {
+                opacity: 1;
+                transform: translateY(0); /* Animasyon sırasında aşağı kayar */
+            }
+
+    .content-block {
+        display: flex;
+        align-items: center;
+        gap: 40px;
+        margin: 60px auto;
+        max-width: 1100px;
+        padding: 20px;
+        border: 2px solid #ccc;
+        border-radius: 12px;
+        background-color: #f9f9f9;
+        opacity: 0;
+        transform: translateX(-100px); /* Başlangıçta gizli ve sola kaymış */
+        transition: transform 0.6s ease, opacity 0.6s ease;
+    }
+
+        .content-block.reverse {
+            flex-direction: row-reverse;
+        }
+
+    .content-image {
+        flex: 1;
+    }
+
+        .content-image img {
+            width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+    .content-text {
+        flex: 1;
+        padding: 20px;
+    }
+
+        .content-text h2 {
+            font-size: 28px;
+            margin-bottom: 15px;
+            color: #000;
+        }
+
+        .content-text p {
+            font-size: 17px;
+            line-height: 1.6;
+            color: #444;
+        }
+
+    @@media (max-width: 768px) {
+        .content-block, .content-block.reverse
+
+    {
+        flex-direction: column;
+    }
+
+    }
+</style>
+
+<div class="hero">
+    <h1>ABOUT US</h1>
+</div>
+
+<!-- Content Block 1 -->
+<div class="content-block">
+    <div class="content-image">
+        <img src="~/images/vision.jpg" alt="Vision">
+    </div>
+    <div class="content-text">
+        <h2>Our Vision</h2>
+        <p>By leading the way in offering animals loving, safe, and healthy homes, we hope to increase awareness and accessibility to the adoption process. We envision a world where every animal finds a compassionate home and the public actively engages in improving their quality of life.</p>
+    </div>
+</div>
+
+<!-- Content Block 2 -->
+<div class="content-block reverse">
+    <div class="content-image">
+        <img src="~/images/mission.jpg" alt="Mission">
+    </div>
+    <div class="content-text">
+        <h2>Our Mission</h2>
+        <p>Our mission is to ensure that every animal is matched with the right family by providing a smart platform that analyzes species, age, gender, health, and other key attributes. We aim to raise awareness of animal welfare, streamline the adoption process, and create secure, nurturing living environments for all animals.</p>
+    </div>
+</div>
+
+<!-- Content Block 3 -->
+<div class="content-block">
+    <div class="content-image">
+        <img src="~/images/corevalues.jpg" alt="Values">
+    </div>
+    <div class="content-text">
+        <h2>Core Values</h2>
+        <p>We are guided by empathy, ensuring animals' physical and emotional needs are met; accessibility, by offering an inclusive and user-friendly platform; accountability, through ethical practices and responsible adoptions; and transparency, by giving adopters clear, detailed information about each animal to support informed decisions.</p>
+    </div>
+</div>
+
+<!-- Content Block 4 -->
+<div class="content-block reverse">
+    <div class="content-image">
+        <img src="~/images/sustainability.jpg" alt="SDG 15">
+    </div>
+    <div class="content-text">
+        <h2>Sustainable Development Goals</h2>
+        <p>Our application supports sustainability by optimizing the adoption process to minimize resource use and ensure animals' long-term wellbeing. Through educational events and awareness campaigns, we strive to create a community that values responsible animal care and actively works to reduce the number of homeless animals worldwide.</p>
+    </div>
+</div>
+
+<!-- Content Block 5 -->
+<div class="content-block">
+    <div class="content-image">
+        <img src="~/images/ourstory.jpg" alt="Story">
+    </div>
+    <div class="content-text">
+        <h2>Our Story</h2>
+        <p>Our platform was founded by a group of passionate animal advocates who recognized the challenges within traditional adoption systems. Frustrated by the lengthy and inefficient processes at many shelters, we united to develop a digital solution that empowers users with detailed information, simplifies adoption, and gives every animal a chance at a brighter, safer future.</p>
+    </div>
+</div>
+
+<script>
+    // Header animasyonu: Sayfa yüklendiğinde başlık görünür olacak
+    window.onload = function() {
+        const heroHeader = document.querySelector('.hero h1');
+        heroHeader.classList.add('visible');
+    };
+
+    // Scroll animasyonları: Divler kayarak görünür olacak
+    const contentBlocks = document.querySelectorAll('.content-block');
+    window.addEventListener('scroll', function() {
+        contentBlocks.forEach((block, index) => {
+            const rect = block.getBoundingClientRect();
+            if (rect.top <= window.innerHeight - 100) { // Sayfa görünümüne girdiyse
+                block.style.opacity = 1;
+                block.style.transform = 'translateX(0)';
+            }
+        });
+    });
+</script>
