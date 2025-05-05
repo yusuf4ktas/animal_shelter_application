@@ -12,7 +12,7 @@ public class ArticleController : Controller
         _db = db;
         _env = env;
     }
-
+    
     //  GET  /Admin/PublishArticle
     [HttpGet]
     public IActionResult PublishArticle()
@@ -22,6 +22,16 @@ public class ArticleController : Controller
             return RedirectToAction("AdminLogin", "Account");
 
         return View("PublishArticle", new AddArticleViewModel());
+    }
+    // GET: /Article/Blog
+    [HttpGet]
+    public IActionResult Blog()
+    {
+        var articles = _db.ArticleInformations
+            .OrderByDescending(a => a.BlogDate)
+            .ToList();
+
+        return View("Blog", articles);
     }
 
     //  POST /Admin/PublishArticle
