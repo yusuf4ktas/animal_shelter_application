@@ -166,7 +166,7 @@
 
         /* Tema Sınıfları */
         body.dog-theme {
-            background: #FFF3E0; /* Açık sıcak krem */
+            background: linear-gradient(to right, #FFF8E1, #FFE0B2, #FFCC80, #FFF8E1);
         }
 
         .dog-theme .overlay {
@@ -314,6 +314,8 @@
                     <p class="animal-info-item"><strong>Gender:</strong> @(Model.AnimalGender ? "Female" : "Male")</p>
                     <p class="animal-info-item"><strong>Neutered:</strong> @(Model.NeuteringStatus ? "Yes" : "No")</p>
                     <p class="animal-info-item"><strong>Features:</strong> @Model.CharacteristicFeatures</p>
+                    <p class="animal-info-item"><strong>Past Information:</strong> @(string.IsNullOrEmpty(Model.PastInformation) ? "No past information available." : Model.PastInformation)</p>
+
                     <div class="animal-info-item">
                         <strong>Chronic Disease:</strong> @(Model.HealthCondition?.ChronicDiseaseStatus == true ? "Yes" : "No")
                         @if (Model.HealthCondition?.ChronicDiseaseStatus == true)

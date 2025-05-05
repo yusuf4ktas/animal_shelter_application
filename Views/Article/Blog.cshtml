@@ -259,9 +259,6 @@
         border-color: #862805;
     }
 
-
-
-
     /* Media Queries */
     @@media (max-width: 767px) {
         .blog-header h1 {
@@ -319,7 +316,7 @@
                                 }
                             </p>
                             <div class="mt-3 text-center">
-                                <a href="@Url.Action("Details", "Blog", new { id = article.ArticleId })" class="btn btn-primary">Read More</a>
+                                <a href="@article.BlogUrl" target="_blank" class="btn btn-primary">Read More</a> <!--Made it so that BlogUrl will be succefully parsed-->
                             </div>
                         </div>
                     </div>
