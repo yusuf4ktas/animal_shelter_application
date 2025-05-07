@@ -4,11 +4,11 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     var uniqueSpecies = Model.Select(a => a.Species).Distinct().OrderBy(s => s).ToList();
 }
-<!-- Fontları ekledim -->
 <link href="https://fonts.googleapis.com/css?family=Cardo:400i|Rubik:400,700&display=swap" rel="stylesheet">
 <div class="container my-4">
+    @* This container is around the form and provides its initial spacing *@
     <style>
-        /* Kartlık için CSS */
+        /* Kartlık için CSS - Keep your existing styles here */
         :root {
             --d: 700ms;
             --e: cubic-bezier(0.19, 1, 0.22, 1);
@@ -102,24 +102,17 @@
             font-weight: bold;
             letter-spacing: 0.025rem;
             text-transform: uppercase;
-            color: white;
-            background-color: black;
+            /* Initial button colors handled below */
             border: none;
             border-radius: 20px;
         }
-
-            .btn:hover {
-                background-color: #333;
-            }
 
             .btn:focus {
                 outline: 1px dashed yellow;
                 outline-offset: 3px;
             }
 
-        
-
-        /* Kart hover efektleri */
+        /* Kart hover efektleri - Keep your existing styles here */
         @@media (hover: hover) {
             .card:after {
                 transform: translateY(0);
@@ -158,13 +151,52 @@
                     }
         }
 
-        /* Filtreleme çubuğuna gradyan arka plan ekleme */
+        /* --- Styles for the Filtration Bar --- */
+        #filter-container {
+            position: relative;
+            width: 100%;
+            margin: 20px auto;
+            max-width: 1000px; /* Original was 800px */
+        }
+
         #filterForm {
             background: linear-gradient(to right, #e0dca5, #cfe0a5, #e0cba5);
-            padding: 20px;
+            padding: 10px 20px; /* Original was 20px */
             border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            position: relative;
+            z-index: 200;
+            opacity: 1;
+            will-change: position, opacity, backdrop-filter;
         }
+
+        /* Sticky filter class applies when scrolled */
+        .sticky-filter {
+            position: fixed !important;
+            top: 0; /* Set dynamically by JS */
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            width: 95% !important; 
+            max-width: 1000px !important;
+            backdrop-filter: blur(3px) !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15) !important;
+            z-index: 990 !important;
+            background: linear-gradient(to right, rgba(224, 220, 165, 0.9), rgba(207, 224, 165, 0.9), rgba(224, 203, 165, 0.9)) !important;
+            opacity: 0.30 !important;
+        }
+
+        .sticky-filter:hover {
+            opacity: 1 !important;
+            backdrop-filter: none !important;
+        }
+
+        #filter-placeholder {
+            display: none;
+            width: 100%;
+        }
+        /* --- End Styles for the Filtration Bar --- */
+
 
         /* Açılır menü stilleri */
         .form-select {
@@ -186,22 +218,13 @@
                     color: white !important;
                 }
 
-                /* Seçili öğe rengi - yeşil 
-                .form-select option:checked,
-                .form-select option:selected {
-                    background-color: #7c9c62 !important;
-                    color: white !important;
-                }*/
-
             /* Açılır menüde seçili görünen değer için */
             .form-select:focus option:checked {
                 background-color: #7c9c62 !important;
                 color: white !important;
             }
 
-
-
-
+        /* Background styles - Keep your existing styles here */
         body::before {
             content: "";
             position: fixed;
@@ -210,7 +233,7 @@
             width: 100%;
             height: 100%;
             background: url('/images/ExploreAnimals_Background.jpg') no-repeat center center/cover;
-            background-size: 40%; /* Resmi küçültme  */
+            background-size: 40%; /* Resmi küçültme  */
             background-repeat: repeat; /* Resmi her iki yönde tekrarlama */
             filter: blur(1.5px);
             z-index: -2;
@@ -223,10 +246,10 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(255, 255, 255, 0.6); 
+            background-color: rgba(255, 255, 255, 0.6);
             z-index: -1;
         }
-        /* Apply ve Clear Filter butonları için Yeşil renk */
+        /* Apply ve Clear Filter butonları için Yeşil renk - Keep your existing styles here */
         .btn-apply, .btn-clear {
             background-color: #7c9c62; /* Yeşil arka plan */
             color: white;
@@ -252,79 +275,87 @@
                 outline-offset: 3px;
             }
 
-
     </style>
 
-    <form id="filterForm" method="get" action="@Url.Action("Index", "Home")">
-        <div class="row align-items-end gy-2">
-            <div class="col-sm-3">
-                <label for="species" class="form-label">Species</label>
-                <select class="form-select" id="species" name="species">
-                    <option value="">All</option>
-                    @foreach (var species in uniqueSpecies)
-                    {
-                        <option value="@species">@species</option>
-                    }
-                </select>
+    @* Your existing Filter Form HTML *@
+    @* The form is now wrapped in a container with id="filter-container" for easier JS targeting *@
+    <div id="filter-container">
+        <form id="filterForm" method="get" action="@Url.Action("Index", "Home")">
+            <div class="row align-items-end gy-2">
+                <div class="col-sm-3">
+                    <label for="species" class="form-label">Species</label>
+                    <select class="form-select" id="species" name="species">
+                        <option value="">All</option>
+                        @foreach (var species in uniqueSpecies)
+                        {
+                            <option value="@species">@species</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-sm-3">
+                    <label for="neutered" class="form-label">Neutering Status</label>
+                    <select class="form-select" id="neutered" name="neutered">
+                        <option value="">All</option>
+                        <option value="true">Neutered</option>
+                        <option value="false">Not Neutered</option>
+                    </select>
+                </div>
+                <div class="col-sm-3">
+                    <label for="adopted" class="form-label">Adoption Status</label>
+                    <select class="form-select" id="adopted" name="adopted">
+                        <option value="">All</option>
+                        <option value="true">Adopted</option>
+                        <option value="false">Not Adopted</option>
+                    </select>
+                </div>
+                <div class="col-sm-3">
+                    <label for="animal_gender" class="form-label">Gender</label>
+                    <select class="form-select" id="animal_gender" name="animal_gender">
+                        <option value="">All</option>
+                        <option value="0">Female</option>
+                        <option value="1">Male</option>
+                    </select>
+                </div>
+                <div class="col-sm-3">
+                    <label for="disability_status" class="form-label">Disability Status</label>
+                    <select class="form-select" id="disability_status" name="disability_status">
+                        <option value="">All</option>
+                        <option value="false">No</option>
+                        <option value="true">Yes</option>
+                    </select>
+                </div>
+                <div class="col-sm-3">
+                    <label for="chronic_disease_status" class="form-label">Chronic Disease</label>
+                    <select class="form-select" id="chronic_disease_status" name="chronic_disease_status">
+                        <option value="">All</option>
+                        <option value="0">Temporary</option>
+                        <option value="1">Permanent</option>
+                    </select>
+                </div>
+                <div class="col-sm-3">
+                    <label for="animal_age_range" class="form-label">Age Range</label>
+                    <select class="form-select" id="animal_age_range" name="animal_age_range">
+                        <option value="">All</option>
+                        <option value="0-1">0-1</option>
+                        <option value="2-3">2-3</option>
+                        <option value="4-5">4-5</option>
+                        <option value="6-more">6+</option>
+                    </select>
+                </div>
+                <div class="col-sm-3 d-flex gap-2">
+                    <button type="submit" class="btn btn-apply">Apply</button>
+                    <button type="button" class="btn btn-clear btn-sm" id="clearFiltersBtn">Clear Filters</button>
+                </div>
             </div>
-            <div class="col-sm-3">
-                <label for="neutered" class="form-label">Neutering Status</label>
-                <select class="form-select" id="neutered" name="neutered">
-                    <option value="">All</option>
-                    <option value="true">Neutered</option>
-                    <option value="false">Not Neutered</option>
-                </select>
-            </div>
-            <div class="col-sm-3">
-                <label for="adopted" class="form-label">Adoption Status</label>
-                <select class="form-select" id="adopted" name="adopted">
-                    <option value="">All</option>
-                    <option value="true">Adopted</option>
-                    <option value="false">Not Adopted</option>
-                </select>
-            </div>
-            <div class="col-sm-3">
-                <label for="animal_gender" class="form-label">Gender</label>
-                <select class="form-select" id="animal_gender" name="animal_gender">
-                    <option value="">All</option>
-                    <option value="0">Female</option>
-                    <option value="1">Male</option>
-                </select>
-            </div>
-            <div class="col-sm-3">
-                <label for="disability_status" class="form-label">Disability Status</label>
-                <select class="form-select" id="disability_status" name="disability_status">
-                    <option value="">All</option>
-                    <option value="false">No</option>
-                    <option value="true">Yes</option>
-                </select>
-            </div>
-            <div class="col-sm-3">
-                <label for="chronic_disease_status" class="form-label">Chronic Disease</label>
-                <select class="form-select" id="chronic_disease_status" name="chronic_disease_status">
-                    <option value="">All</option>
-                    <option value="0">Temporary</option>
-                    <option value="1">Permanent</option>
-                </select>
-            </div>
-            <div class="col-sm-3">
-                <label for="animal_age_range" class="form-label">Age Range</label>
-                <select class="form-select" id="animal_age_range" name="animal_age_range">
-                    <option value="">All</option>
-                    <option value="0-1">0-1</option>
-                    <option value="2-3">2-3</option>
-                    <option value="4-5">4-5</option>
-                    <option value="6-more">6+</option>
-                </select>
-            </div>
-            <div class="col-sm-3 d-flex gap-2">
-                <button type="submit" class="btn btn-apply">Apply</button>
-                <button type="button" class="btn btn-clear btn-sm" id="clearFiltersBtn">Clear Filters</button>
-            </div>
-        </div>
-    </form>
-</div>
+        </form>
+        <div id="filter-placeholder" class="filter-placeholder"></div>
+    </div>
+</div> @* Closing div for container my-4 around the form *@
+
+
+@* The container div below holds the main content like animal cards *@
 <div class="container">
+    @* This is the container for the main content below the form *@
     <h2 class="text-center mb-4">@ViewBag.Filter</h2>
 
     @if (Model != null && Model.Any())
@@ -352,23 +383,79 @@
     }
 </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const form = document.getElementById('filterForm');
-        const params = new URLSearchParams(window.location.search);
 
-        form.querySelectorAll('select').forEach(select => {
-            const paramValue = params.get(select.name);
-            if (paramValue) {
-                select.value = paramValue;
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterForm = document.getElementById('filterForm');
+            const filterPlaceholder = document.getElementById('filter-placeholder');
+            const navbar = document.querySelector('.navbar');
+
+            if (!filterForm || !filterPlaceholder || !navbar) {
+                console.error("Required elements not found!");
+                return; // Exit if elements are missing
             }
-        });
 
-        document.getElementById('clearFiltersBtn').addEventListener('click', function() {
-            form.querySelectorAll('select').forEach(select => {
-                select.value = '';
+            // Get navbar height
+            const navHeight = navbar.offsetHeight;
+
+
+            requestAnimationFrame(function() {
+                const formRect = filterForm.getBoundingClientRect();
+                const formTop = formRect.top + window.scrollY; // Top position relative to document
+                const formHeight = formRect.height; // Height including padding and border
+
+                const scrollThreshold = formTop - navHeight;
+
+                function handleScroll() {
+                    const shouldStick = window.scrollY >= scrollThreshold;
+
+                    if (shouldStick) {
+                        filterForm.classList.add('sticky-filter');
+                        // Dynamically set the top position based on navbar height
+                        filterForm.style.top = navHeight + 8 + 'px';
+                        filterPlaceholder.style.display = 'block';
+                        filterPlaceholder.style.height = formHeight + 'px';
+
+
+                    } else {
+                        // Return to normal flow
+                        filterForm.classList.remove('sticky-filter');
+                        filterForm.style.top = '';
+                        filterPlaceholder.style.display = 'none';
+                        filterPlaceholder.style.height = '';
+                    }
+                }
+
+                // Add scroll listener
+                window.addEventListener('scroll', handleScroll);
+                handleScroll();
+
+                // Handle window resize: recalculate placeholder height if filter is sticky
+                window.addEventListener('resize', function() {
+                    const currentFormHeight = filterForm.getBoundingClientRect().height;
+                    if (filterForm.classList.contains('sticky-filter')) {
+                        filterPlaceholder.style.height = currentFormHeight + 'px';
+                    }
+                });
+
             });
-            form.submit();
+
+            const params = new URLSearchParams(window.location.search);
+
+            // Set initial filter values
+            filterForm.querySelectorAll('select').forEach(select => {
+                const paramValue = params.get(select.name);
+                if (paramValue !== null) { // Use null check for empty string values
+                    select.value = paramValue;
+                }
+            });
+
+            // Clear filters button
+            document.getElementById('clearFiltersBtn').addEventListener('click', function() {
+                filterForm.querySelectorAll('select').forEach(select => select.value = '');
+                filterForm.submit();
+            });
         });
-    });
-</script>
+    </script>
+}

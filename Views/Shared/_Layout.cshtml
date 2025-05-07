@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="~/trial.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
     <style>
+
         html, body {
             height: 100%;
             margin: 0;
@@ -22,11 +23,199 @@
 
         .container {
             flex: 1;
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
         }
 
         footer {
             flex-shrink: 0;
         }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%; /* Makes it span the full width */
+            z-index: 1000; /* Ensures it stays on top of other content */
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+            .navbar .btn-drawer {
+                padding: 0.25rem 0.5rem; 
+                font-size: 1.2rem; 
+                border-radius: 4px; 
+                background-color: #f8f9fa; /* Light background */
+                border: 1px solid #dee2e6; /* Add a subtle border */
+                transition: all 0.3s ease; /* Smooth hover effect */
+            }
+
+                .navbar .btn-drawer:hover {
+                    background-color: #e2e6ea; /* Slightly darker background on hover */
+                    border-color: #ced4da; /* Darker border on hover */
+                }
+
+        main {
+            padding-top: 60px;
+        }
+        .offcanvas-header {
+            background-color: #e9ecef; /* Slightly darker header background */
+            border-bottom: 1px solid #dee2e6;
+            padding: 1rem; /* Adjust padding */
+        }
+
+            .offcanvas-header h5 {
+                color: #343a40; /* Darker text color for header */
+                font-weight: bold;
+                display: flex; /* Align icon and text if you add one */
+                align-items: center;
+            }
+
+
+        .offcanvas-body {
+            padding: 0; /* Remove default body padding to control list item padding */
+        }
+
+            .offcanvas-body .list-group {
+                --bs-list-group-border-color: none; /* Remove default list group borders */
+                border-radius: 0; /* Remove border radius */
+            }
+
+            .offcanvas-body .list-group-item {
+                border: none;
+                padding: 1rem 1.5rem; 
+                transition: background-color 0.2s ease, color 0.2s ease; 
+                cursor: pointer;
+                display: flex; 
+                align-items: center;
+            }
+
+                .offcanvas-body .list-group-item a {
+                    text-decoration: none; 
+                    color: #495057; 
+                    font-weight: 500; 
+                    display: flex; 
+                    align-items: center;
+                    width: 100%; 
+                }
+
+                .offcanvas-body .list-group-item:hover {
+                    background-color: #e2e6ea; /* Light background on hover */
+                    color: #000; /* Darker text on hover */
+                }
+
+                    .offcanvas-body .list-group-item:hover a {
+                        color: #000; /* Ensure link color changes on hover */
+                    }
+
+                /* Style for Bootstrap icons within list items */
+                .offcanvas-body .list-group-item i {
+                    margin-right: 10px;
+
+                }
+
+                /* Add a subtle border between list items */
+                .offcanvas-body .list-group-item + .list-group-item {
+                    border-top: 1px solid #e9ecef;
+                }
+
+        .offcanvas-header .btn-close {
+            width: 1.5rem; /* Adjust size */
+            height: 1.5rem; /* Adjust size */
+            background-color: #f8f9fa; /* Light background */
+            border: 1px solid #dee2e6; /* Add a subtle border */
+            border-radius: 50%; /* Make it circular */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease; /* Smooth hover effect */
+        }
+
+            .offcanvas-header .btn-close:hover {
+                background-color: #e2e6ea; /* Slightly darker background on hover */
+                border-color: #ced4da; /* Darker border on hover */
+                transform: scale(1.1); /* Slightly enlarge on hover */
+            }
+
+            .offcanvas-header .btn-close::before {
+                content: '×'; /* Replace default icon with a custom "×" */
+                font-size: 1.2rem; /* Adjust size */
+                color: #495057; /* Darker color */
+            }
+
+
+        .form-select {
+            background-color: #f5f5f5;
+            color: #000000;
+            border: 1px solid #7c9c62;
+            outline: none;
+        }
+
+            .form-select option {
+                background-color: #f5f5f5;
+                color: #000000;
+            }
+
+                .form-select option:hover {
+                    background-color: #7c9c62 !important;
+                    color: white !important;
+                }
+
+            .form-select:focus option:checked {
+                background-color: #7c9c62 !important;
+                color: white !important;
+            }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('/images/ExploreAnimals_Background.jpg') no-repeat center center/cover;
+            background-size: 40%; /* Resmi küçültme  */
+            background-repeat: repeat; /* Resmi her iki yönde tekrarlama */
+            filter: blur(1.5px);
+            z-index: -2;
+        }
+
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.6);
+            z-index: -1;
+        }
+        /* Apply ve Clear Filter butonları için Yeşil renk */
+        .btn-apply, .btn-clear {
+            background-color: #7c9c62; /* Yeşil arka plan */
+            color: white;
+        }
+
+            .btn-apply:hover, .btn-clear:hover {
+                background-color: #6b8f52; /* Hover durumunda biraz daha koyu yeşil */
+            }
+
+        /* View Details butonu için Siyah renk */
+        .btn-view-details {
+            background-color: black; /* Siyah arka plan */
+            color: white;
+        }
+
+            .btn-view-details:hover {
+                background-color: #333; /* Hover durumunda daha koyu siyah */
+            }
+
+            /* Focus durumları */
+            .btn-apply:focus, .btn-clear:focus, .btn-view-details:focus {
+                outline: 1px dashed yellow;
+                outline-offset: 3px;
+            }
+
     </style>
     @RenderSection("Styles", required: false)
 </head>
@@ -35,8 +224,8 @@
         <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
 
-                <button class="btn btn-link me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#filterDrawer" aria-label="Filter">
-                    <i class="bi bi-list fs-4"></i>
+                <button class="btn btn-drawer me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#filterDrawer" aria-label="Filter">
+                    <i class="bi bi-list fs-5"></i>
                 </button>
 
                 <a class="navbar-brand" href="@Url.Action("Index", "Home")">PawfectMatch</a>
@@ -93,9 +282,6 @@
                             }
                         </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="ScheduleAVisit">Schedule a Visit</a>
-                        </li>
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="AboutUs">About Us</a>
                         </li>

@@ -3,39 +3,39 @@
     ViewData["Title"] = "User page";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-
 <style>
     body {
         background-color: #FAFAFA;
     }
-
     /* User Dashboard Specific Styles */
     .user-dashboard-container {
-        padding-top: 3rem !important;
+        padding-top: 3rem !important; 
         padding-bottom: 3rem !important;
-        background-color: transparent !important; 
-        box-shadow: none !important;
-        border-radius: 0 !important; 
+        background-color: whitesmoke !important;
+        box-shadow: none !important; 
+        border-radius: 25px !important;
+       
     }
 
     .user-dashboard-container h2 {
-        text-align: center; 
+        text-align: center;
         margin-bottom: 2rem !important;
         color: #007bff; 
         font-style: italic;
-        font-weight: bold;
         font-size: 2.8em;
-    }
+        font-weight: bold;
+        }
 
     .user-dashboard-container h3 {
-         margin-top: 3rem; 
+         margin-top: 3rem;
          margin-bottom: 1.5rem;
-         color: #007bff; 
-         font-style: italic;
-         font-size: 2.0em;
+         color: #007bff;
+         font-weight: bold;
+         font-size: 2.4em;
     }
 
 
+    /* Blog View Card Styles (adapted) */
     .card {
         background-color: white;
         color: black;
@@ -51,11 +51,11 @@
 
         .card:hover {
             transform: scale(1.02);
-            color: white; 
         }
 
      .card-body {
         padding-bottom: 60px; 
+     }
 
 
     .card-title {
@@ -69,14 +69,14 @@
         margin-bottom: 10px;
         position: relative;
         z-index: 2;
-        color: #007bff;
+        color: #007bff; 
     }
 
     .card-divider {
         height: 6px;
         margin: 0 auto 15px auto;
         width: 100%;
-        background-color: black; 
+        background-color: black;
         border-radius: 4px;
     }
 
@@ -88,7 +88,7 @@
     .card-body::after {
         content: "";
         display: block;
-        height: 40px; 
+        height: 40px;
     }
 
 
@@ -111,7 +111,7 @@
         bottom: 15px; 
         left: 50%;
         transform: translateX(-50%);
-        z-index: 3; 
+        z-index: 3;
         background-color: #007bff;
         border-color: #007bff;
     }
@@ -139,10 +139,10 @@
 
 
     /* Hover dynamic styles */
-    .card-1:hover { background-color: #4bdfee; }
-    .card-2:hover { background-color: #ee4bd8; }
-    .card-3:hover { background-color: #2ff132; }
-    .card-4:hover { background-color: #f1642f; }
+    .card-1:hover { background-color: #4bdfee; color: white; }
+    .card-2:hover { background-color: #ee4bd8; color: white; } 
+    .card-3:hover { background-color: #2ff132; color: white; } 
+    .card-4:hover { background-color: #f1642f; color: white; } 
 
     .card-1:hover::before { background-color: #218792; }
     .card-2:hover::before { background-color: #821a74; }
@@ -187,7 +187,7 @@
 </style>
 
 <div class="container-lg mt-4 p-4 rounded shadow-sm user-dashboard-container">
-    <h2>Hello, @Context.Session.GetString("UserName")!</h2>
+    <h2 class="mb-4 fw-semibold text-primary">Hello, @Context.Session.GetString("UserName")!</h2>
 
     <div id="mainCarousel" class="carousel slide shadow-sm mb-5 rounded">
         <div class="carousel-indicators">
@@ -226,7 +226,6 @@
     else
     {
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-
             @{ int cardIndex = 0; }
             @foreach (var a in Model.Articles)
             {
@@ -234,16 +233,13 @@
                  var cardClass = $"card card-{cardIndex % 4 + 1}";
 
                 <div class="col">
-
                     <div class="@cardClass h-100 shadow-sm">
                         <div class="card-body">
                             <h5 class="card-title">@a.BlogTitle</h5>
-    
                              <div class="card-divider"></div>
                             <p class="card-text">
                                 @a.BlogContent
                             </p>
-
                             <div class="card-footer-spacer"></div>
                         </div>
                         <div class="mt-3 text-center" style="position: absolute; bottom: 15px; width: 100%; left: 0; padding: 0 15px;">
@@ -253,7 +249,6 @@
                                     Read&nbsp;<i class="bi bi-box-arrow-up-right"></i>
                                 </a>
                             }
-             
                         </div>
                     </div>
                 </div>
