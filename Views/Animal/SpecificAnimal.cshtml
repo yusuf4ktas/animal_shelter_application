@@ -110,12 +110,13 @@
             position: absolute;
             top: 0;
             right: 0;
+            bottom: 0; /* fill all the way to the bottom */
             width: 60vmin;
-            height: 100%;
+            margin: 0; /* no extra Bootstrap margins */
             padding: 3vmin 4vmin;
             background: #fff;
-            box-shadow: inset 1px 1px 15px 0 rgba(0 0 0 / 0.4);
-            overflow-y: scroll;
+            box-shadow: inset 1px 1px 15px rgba(0,0,0,0.4);
+            overflow-y: auto; /* scroll internally if needed */
         }
 
         .wrap:hover .overlay {
@@ -294,7 +295,7 @@
             </div>
         </div>
 
-        <div class="text container mt-4">
+        <div class="text">
             <div class="row">
                 <div class="col-md-6">
                     @if (!string.IsNullOrEmpty(Model.AnimalImage))
@@ -409,6 +410,11 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+            
 
 
                     <script>

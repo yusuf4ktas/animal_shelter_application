@@ -7,10 +7,10 @@
 }
 
 <div class="container-lg mt-4">
-    <h2 class="mb-1 fw-semibold">Admin dashboard</h2>
-    <p class="text-muted mb-4">
-        Welcome, @((HttpCtx.HttpContext?.Session.GetString("UserName") ?? "Admin"))!
-    </p>
+  <h2 class="mb-1 fw-bold text-black fs-2">Admin dashboard</h2>
+  <p class="text-black mb-4 fs-5 fw-bold">  
+     Welcome, @((HttpCtx.HttpContext?.Session.GetString("UserName") ?? "Admin"))!  
+  </p>
 
     @if (TempData["Success"] != null)
     {
@@ -21,12 +21,13 @@
     }
 
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h5 class="mb-0 fw-semibold">Manage Content</h5>
-        <a class="btn btn-outline-secondary btn-sm"
-           asp-controller="Article" asp-action="PublishArticle">
-            <i class="bi bi-plus-circle me-1"></i> New Article
-        </a>
-    </div>
+           <h5 class="mb-0 fw-semibold">Manage Content</h5>
+           <a class="btn btn-outline-secondary btn-sm px-3 py-2 fw-bold"
+              style="font-size: 0.95rem;"
+              asp-controller="Article" asp-action="PublishArticle">
+               <i class="bi bi-plus-circle me-1"></i> New Article
+           </a>
+       </div>
 
     <div class="card shadow-sm">
         <div class="card-header bg-primary text-white">

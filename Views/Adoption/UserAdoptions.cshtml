@@ -1,95 +1,186 @@
 ﻿@model IEnumerable<animal_shelter_app.Models.Adoption>
+@{  
+   ViewData["Title"] = "My Applications";  
+}  
 
-@{
-    ViewData["Title"] = "My Applications";
-}
+<div class="container-fluid py-4">  
+   <div class="row mb-4">  
+       <div class="col">  
+           <h2 class="text-primary">  
+               <i class="bi bi-file-earmark-heart me-2"></i><strong><em>@ViewData["Title"]</em></strong>  
+           </h2>  
+       </div>
+    </div>
 
-<h2>@ViewData["Title"]</h2>
+    @* Alert messages *@
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>@TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>@TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
 
-
-@if (TempData["SuccessMessage"] != null)
-{
-    <div class="alert alert-success">@TempData["SuccessMessage"]</div>
-}
-@if (TempData["ErrorMessage"] != null)
-{
-    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
-}
-
-
-@if (Model != null && Model.Any())
-{
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Animal</th>
-                <th>Appointment Date</th>
-                <th>Adres</th>
-                <th>Status</th>
-                <th>Admin Note</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var adoption in Model)
-            {
-                <tr>
-                    <td>
-                        @if (adoption.AnimalInformation != null)
-                        {
-                            <a href="@Url.Action("SpecificAnimal", "Animal", new { id = adoption.AnimalId })">
-                                @adoption.AnimalInformation.Species - @adoption.AnimalInformation.AnimalId
-                            </a>
-                        }
-                        else
-                        {
-                            <span>Animal Information Couldn't Found'</span>
-                        }
-
-                    </td>
-                    <td>@adoption.AdoptionDate</td>
-                    <td>@adoption.UserAddress</td>
-                    <td>
-                        @{
-
-                            string statusClass = "";
-                            switch (adoption.AdoptionStatus)
+    @if (Model != null && Model.Any())
+    {
+        <div class="card shadow">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-3">Animal</th>
+                                <th>Appointment Date</th>
+                                <th>Address</th>
+                                <th>Status</th>
+                                <th>Admin Note</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var adoption in Model)
                             {
-                                case "Pending":
-                                    statusClass = "badge bg-warning";
-                                    break;
-                                case "Approved":
-                                    statusClass = "badge bg-success";
-                                    break;
-                                case "Rejected":
-                                    statusClass = "badge bg-danger";
-                                    break;
-                                default:
-                                    statusClass = "badge bg-secondary";
-                                    break;
+                                <tr>
+                                    <td class="ps-3">
+                                        @if (adoption.AnimalInformation != null)
+                                        {
+                                            <a href="@Url.Action("SpecificAnimal", "Animal", new { id = adoption.AnimalId })"
+                                               class="text-decoration-none d-flex align-items-center">
+                                                <i class="bi bi-clipboard2-heart me-2 text-primary"></i>
+                                                <span>@adoption.AnimalInformation.Species - @adoption.AnimalInformation.AnimalId</span>
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">
+                                                <i class="bi bi-exclamation-circle me-2"></i>Animal Information Couldn't Found
+                                            </span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <span class="d-flex align-items-center">
+                                            <i class="bi bi-calendar-date me-2 text-muted"></i>
+                                            @adoption.AdoptionDate
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="d-flex align-items-center">
+                                            <i class="bi bi-geo-alt me-2 text-muted"></i>
+                                            @(string.IsNullOrEmpty(adoption.UserAddress) ? "Not provided" : adoption.UserAddress)
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @{
+                                            string statusClass = adoption.AdoptionStatus switch
+                                            {
+                                                "Pending" => "badge rounded-pill bg-warning text-dark",
+                                                "Approved" => "badge rounded-pill bg-success",
+                                                "Rejected" => "badge rounded-pill bg-danger",
+                                                _ => "badge rounded-pill bg-secondary"
+                                            };
+
+                                            string statusIcon = adoption.AdoptionStatus switch
+                                            {
+                                                "Pending" => "bi bi-hourglass-split",
+                                                "Approved" => "bi bi-check-circle",
+                                                "Rejected" => "bi bi-x-circle",
+                                                _ => "bi bi-question-circle"
+                                            };
+                                        }
+                                        <span class="@statusClass">
+                                            <i class="@statusIcon me-1"></i>@adoption.AdoptionStatus
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(adoption.AdminNote))
+                                        {
+                                            <div class="p-2 bg-light rounded">
+                                                <i class="bi bi-chat-quote me-2 text-primary"></i>
+                                                @adoption.AdminNote
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted fst-italic">No notes from admin</span>
+                                        }
+                                    </td>
+                                </tr>
                             }
-                        }
-                        <span class="@statusClass">@adoption.AdoptionStatus</span>
-                    </td>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
-                    <td>
-                        
-                        @if (!string.IsNullOrEmpty(adoption.AdminNote))
-                        {
-                            <p>@adoption.AdminNote</p>
-                        }
-                        else
-                        {
-                            <span>--</span> 
-                        }
-                    </td>
+        /* Information cards for the meaning of the icons and process*/
+        <div class="mt-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">
+                        <i class="bi bi-info-circle me-2"></i>Application Status Guide
+                    </h5>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center">
+                                <span class="badge rounded-pill bg-warning text-dark me-2">
+                                    <i class="bi bi-hourglass-split me-1"></i>Pending
+                                </span>
+                                <span>Your application is under review</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center">
+                                <span class="badge rounded-pill bg-success me-2">
+                                    <i class="bi bi-check-circle me-1"></i>Approved
+                                </span>
+                                <span>Your application has been approved</span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="d-flex align-items-center">
+                                <span class="badge rounded-pill bg-danger me-2">
+                                    <i class="bi bi-x-circle me-1"></i>Rejected
+                                </span>
+                                <span>Your application was not approved</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card shadow">
+            <div class="card-body text-center py-5">
+                <i class="bi bi-inbox fs-1 text-muted mb-3"></i>
+                <h4>No Applications Yet</h4>
+                <p class="text-muted">You have not submitted any adoption applications yet.</p>
+                <a href="@Url.Action("Index", "Animal")" class="btn btn-primary mt-3">
+                    <i class="bi bi-search me-2"></i>Browse Animals
+                </a>
+            </div>
+        </div>
+    }
+</div>
 
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-
-else
-{
-    <p>You do not have any adoption process yet.</p>
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Auto-dismiss alerts after 5 seconds
+            const alerts = document.querySelectorAll('.alert');
+            setTimeout(() => {
+                alerts.forEach(alert => {
+                    const bsAlert = new bootstrap.Alert(alert);
+                    setTimeout(() => bsAlert.close(), 5000);
+                });
+            }, 3000);
+        });
+    </script>
 }
